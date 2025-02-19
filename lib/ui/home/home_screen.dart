@@ -16,10 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
-    final homeViewModel = widget._viewModel;
-
-    homeViewModel.getBills();
+    widget._viewModel.getBills();
   }
 
   @override
@@ -29,21 +26,22 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await widget._viewModel.addBill();
+          await widget._viewModel.getBills();
         },
         child: const Icon(Icons.add),
       ),
-      body: StreamBuilder(
-        stream: widget._viewModel.bills,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+      body: ListenableBuilder(
+        listenable: widget._viewModel,
+        builder: (context, _) {
+          if (widget._viewModel.error != null) {
+            return Center(child: Text('Error: ${widget._viewModel.error}'));
           }
 
-          if (!snapshot.hasData) {
+          if (widget._viewModel.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final bills = snapshot.data!;
+          final bills = widget._viewModel.bills;
 
           if (bills.isEmpty) {
             return const Center(child: Text('No bills found.'));
@@ -53,11 +51,5 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    widget._viewModel.dispose();
-    super.dispose();
   }
 }

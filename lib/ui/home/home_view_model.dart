@@ -1,31 +1,48 @@
-import 'dart:async';
 import 'dart:collection';
 
 import 'package:bills_reminder/data/repositories/bills/bills_repository.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
-class HomeViewModel {
+class HomeViewModel extends ChangeNotifier {
   HomeViewModel({required BillsRepository repository})
-    : _repository = repository,
-      _billsController = StreamController();
+    : _repository = repository;
 
   final BillsRepository _repository;
-  final StreamController<UnmodifiableListView<Bill>> _billsController;
-
   final _log = Logger('HomeViewModel');
 
-  Stream<UnmodifiableListView<Bill>> get bills => _billsController.stream;
+  UnmodifiableListView<Bill> _bills = UnmodifiableListView([]);
+  bool _isLoading = false;
+  Object? _error;
+
+  UnmodifiableListView<Bill> get bills => _bills;
+  bool get isLoading => _isLoading;
+  Object? get error => _error;
 
   Future<void> getBills() async {
     _log.fine('Bills loading');
 
-    await Future.delayed(const Duration(seconds: 1));
+    _isLoading = true;
+    _error = null;
 
-    final bills = await _repository.getBills();
-    _billsController.add(UnmodifiableListView(bills));
+    notifyListeners();
 
-    _log.fine('Bills loaded: ${bills.length}');
+    try {
+      await Future.delayed(const Duration(seconds: 1));
+
+      final bills = await _repository.getBills();
+      _bills = UnmodifiableListView(bills);
+
+      _log.fine('Bills loaded: ${bills.length}');
+    } catch (e) {
+      _error = e;
+      _log.severe('Error loading bills', e);
+    } finally {
+      _isLoading = false;
+
+      notifyListeners();
+    }
   }
 
   Future<void> addBill() async {
@@ -43,11 +60,5 @@ class HomeViewModel {
     );
 
     _log.fine('New bill added');
-
-    await getBills();
-  }
-
-  void dispose() {
-    _billsController.close();
   }
 }
