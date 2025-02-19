@@ -26,6 +26,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Bills Reminder')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await widget._viewModel.addBill();
+        },
+        child: const Icon(Icons.add),
+      ),
       body: StreamBuilder(
         stream: widget._viewModel.bills,
         builder: (context, snapshot) {
@@ -47,5 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget._viewModel.dispose();
+    super.dispose();
   }
 }

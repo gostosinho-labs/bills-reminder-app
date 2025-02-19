@@ -27,4 +27,27 @@ class HomeViewModel {
 
     _log.fine('Bills loaded: ${bills.length}');
   }
+
+  Future<void> addBill() async {
+    _log.fine('Adding new bill');
+
+    await _repository.addBill(
+      Bill(
+        name: 'New Bill',
+        date: DateTime.now(),
+        notification: true,
+        recurrence: true,
+        paid: false,
+        value: 0,
+      ),
+    );
+
+    _log.fine('New bill added');
+
+    await getBills();
+  }
+
+  void dispose() {
+    _billsController.close();
+  }
 }
