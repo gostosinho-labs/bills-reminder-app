@@ -20,7 +20,7 @@ class HomeViewModel {
   Future<void> getBills() async {
     _log.fine('Bills loading');
 
-    Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     final bills = await _repository.getBills();
     _billsController.add(UnmodifiableListView(bills));
