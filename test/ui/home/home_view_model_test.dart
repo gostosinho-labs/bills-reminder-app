@@ -10,9 +10,8 @@ void main() {
 
     // Act
     await viewModel.getBills();
-    final bills = await viewModel.bills.first;
 
     // Assert
-    expect(bills.length, 2);
+    expect(viewModel.bills.length, 2);
   });
 }
