@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final bills = snapshot.data!;
 
           if (bills.isEmpty) {
-            return const Center(child: Text('No bills found'));
+            return const Center(child: Text('No bills found.'));
           }
 
           return BillListView(bills: bills);
