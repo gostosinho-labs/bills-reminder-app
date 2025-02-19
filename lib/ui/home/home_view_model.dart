@@ -8,7 +8,7 @@ import 'package:logging/logging.dart';
 class HomeViewModel {
   HomeViewModel({required BillsRepository repository})
     : _repository = repository,
-      _billsController = StreamController<UnmodifiableListView<Bill>>();
+      _billsController = StreamController();
 
   final BillsRepository _repository;
   final StreamController<UnmodifiableListView<Bill>> _billsController;

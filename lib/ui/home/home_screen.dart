@@ -1,6 +1,3 @@
-import 'dart:collection';
-
-import 'package:bills_reminder/domain/models/bill.dart';
 import 'package:bills_reminder/ui/core/bills/bill_list_view.dart';
 import 'package:bills_reminder/ui/home/home_view_model.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Bills Reminder')),
-      body: StreamBuilder<UnmodifiableListView<Bill>>(
+      body: StreamBuilder(
         stream: widget._viewModel.bills,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
