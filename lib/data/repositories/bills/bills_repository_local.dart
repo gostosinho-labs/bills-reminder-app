@@ -15,4 +15,9 @@ class BillsRepositoryLocal implements BillsRepository {
   Future<UnmodifiableListView<Bill>> getBills() {
     return _fakeRepository.getBills();
   }
+
+  @override
+  Future<void> addBill(Bill bill) {
+    return _fakeRepository.addBill(bill);
+  }
 }
