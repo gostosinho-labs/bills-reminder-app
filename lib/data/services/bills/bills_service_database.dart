@@ -22,4 +22,11 @@ class BillsServiceDatabase implements BillsService {
 
     return List.generate(maps.length, (i) => Bill.fromMap(maps[i]));
   }
+
+  @override
+  Future<void> deleteBills() async {
+    final database = await BillsDatabase.instance.database;
+
+    await database.delete('bills');
+  }
 }
