@@ -1,23 +1,25 @@
 import 'dart:collection';
 
+import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
-import 'package:bills_reminder/testing/fakes/repositories/fake_booking_repository.dart';
 
 import 'bills_repository.dart';
 
 class BillsRepositoryLocal implements BillsRepository {
-  BillsRepositoryLocal({required FakeBookingRepository fakeRepository})
-    : _fakeRepository = fakeRepository;
+  BillsRepositoryLocal({required BillsServiceDatabase billsServiceDatabase})
+    : _billsServiceDatabase = billsServiceDatabase;
 
-  final FakeBookingRepository _fakeRepository;
+  final BillsServiceDatabase _billsServiceDatabase;
 
   @override
-  Future<UnmodifiableListView<Bill>> getBills() {
-    return _fakeRepository.getBills();
+  Future<UnmodifiableListView<Bill>> getBills() async {
+    final bills = await _billsServiceDatabase.getBills();
+
+    return UnmodifiableListView(bills);
   }
 
   @override
   Future<void> addBill(Bill bill) {
-    return _fakeRepository.addBill(bill);
+    return _billsServiceDatabase.addBill(bill);
   }
 }
