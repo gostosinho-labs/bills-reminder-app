@@ -14,4 +14,17 @@ void main() {
     // Assert
     expect(viewModel.bills.length, 2);
   });
+
+  test('delete bills', () async {
+    // Arrange
+    final repository = FakeBookingRepository();
+    final viewModel = HomeViewModel(repository: repository);
+
+    // Act
+    await viewModel.getBills();
+    await viewModel.deleteBills();
+
+    // Assert
+    expect(viewModel.bills.length, 0);
+  });
 }
