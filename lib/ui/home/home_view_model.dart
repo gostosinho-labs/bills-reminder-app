@@ -61,4 +61,12 @@ class HomeViewModel extends ChangeNotifier {
 
     _log.fine('New bill added');
   }
+
+  Future<void> deleteBills() async {
+    _log.fine('Deleting all bills');
+
+    await _repository.deleteBills();
+
+    _log.fine('All bills deleted');
+  }
 }

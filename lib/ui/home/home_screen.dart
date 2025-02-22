@@ -23,12 +23,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Bills Reminder')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await widget._viewModel.addBill();
-          await widget._viewModel.getBills();
-        },
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () async {
+              await widget._viewModel.addBill();
+              await widget._viewModel.getBills();
+            },
+            child: const Icon(Icons.add),
+          ),
+          const SizedBox(height: 16),
+          FloatingActionButton(
+            onPressed: () async {
+              await widget._viewModel.deleteBills();
+              await widget._viewModel.getBills();
+            },
+            child: const Icon(Icons.delete),
+          ),
+        ],
       ),
       body: ListenableBuilder(
         listenable: widget._viewModel,
