@@ -32,4 +32,9 @@ class FakeBookingRepository implements BillsRepository {
   Future<void> addBill(Bill bill) async {
     _bills.add(bill);
   }
+
+  @override
+  Future<void> deleteBills() async {
+    _bills.clear();
+  }
 }
