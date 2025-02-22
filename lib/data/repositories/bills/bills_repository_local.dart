@@ -22,4 +22,9 @@ class BillsRepositoryLocal implements BillsRepository {
   Future<void> addBill(Bill bill) {
     return _billsServiceDatabase.addBill(bill);
   }
+
+  @override
+  Future<void> deleteBills() {
+    return _billsServiceDatabase.deleteBills();
+  }
 }
