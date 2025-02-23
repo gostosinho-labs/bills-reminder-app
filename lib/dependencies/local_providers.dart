@@ -6,13 +6,12 @@ import 'package:provider/single_child_widget.dart';
 
 List<SingleChildWidget> localProviders() {
   return [
-    Provider(lazy: true, create: (context) => BillsServiceDatabase()),
+    Provider(create: (context) => BillsServiceDatabase()),
     Provider(
-      lazy: true,
-      create:
-          (context) =>
-              BillsRepositoryLocal(billsServiceDatabase: context.read())
-                  as BillsRepository,
+      create: (context) {
+        return BillsRepositoryLocal(billsServiceDatabase: context.read())
+            as BillsRepository;
+      },
     ),
   ];
 }
