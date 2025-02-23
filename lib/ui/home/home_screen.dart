@@ -1,6 +1,8 @@
+import 'package:bills_reminder/routing/routes.dart';
 import 'package:bills_reminder/ui/core/bills/bill_list_view.dart';
 import 'package:bills_reminder/ui/home/home_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required HomeViewModel viewModel})
@@ -16,7 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    widget._viewModel.getBills();
+
+    Future.microtask(() => widget._viewModel.getBills());
   }
 
   @override
@@ -27,14 +30,16 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
+            heroTag: 'add',
             onPressed: () async {
-              await widget._viewModel.addBill();
+              await context.push(Routes.createBill);
               await widget._viewModel.getBills();
             },
             child: const Icon(Icons.add),
           ),
           const SizedBox(height: 16),
           FloatingActionButton(
+            heroTag: 'delete',
             onPressed: () async {
               await widget._viewModel.deleteBills();
               await widget._viewModel.getBills();
