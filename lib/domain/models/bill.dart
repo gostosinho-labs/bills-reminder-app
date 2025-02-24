@@ -20,7 +20,6 @@ class Bill {
   // Booleans are represented as integers in the database.
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'name': name,
       'date': date.toIso8601String(),
       'notification': notification ? 1 : 0,

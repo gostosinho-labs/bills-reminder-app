@@ -31,7 +31,7 @@ class BillsServiceDatabase implements BillsService {
     await database.insert(
       'bills',
       bill.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      conflictAlgorithm: ConflictAlgorithm.fail,
     );
   }
 
@@ -44,6 +44,7 @@ class BillsServiceDatabase implements BillsService {
       bill.toMap(),
       where: 'id = ?',
       whereArgs: [bill.id],
+      conflictAlgorithm: ConflictAlgorithm.fail,
     );
   }
 
