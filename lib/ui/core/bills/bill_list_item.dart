@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class BillListItem extends StatelessWidget {
-  const BillListItem({super.key, required this.bill});
+  const BillListItem({super.key, required this.bill, required this.onTap});
 
   final Bill bill;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,8 @@ class BillListItem extends StatelessWidget {
           '\$${bill.value.toStringAsFixed(2)}',
           style: Theme.of(context).textTheme.titleMedium,
         ),
+        onTap: onTap,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:bills_reminder/domain/models/bill.dart';
 import 'package:bills_reminder/routing/routes.dart';
 import 'package:bills_reminder/ui/core/bills/bill_list_view.dart';
 import 'package:bills_reminder/ui/home/home_view_model.dart';
@@ -67,7 +68,13 @@ class _HomeScreenState extends State<HomeScreen> {
             return const Center(child: Text('No bills found.'));
           }
 
-          return BillListView(bills: bills);
+          return BillListView(
+            bills: bills,
+            onEdit: (Bill bill) async {
+              await context.push(Routes.editBill(bill.id));
+              await _viewModel.getBills();
+            },
+          );
         },
       ),
     );

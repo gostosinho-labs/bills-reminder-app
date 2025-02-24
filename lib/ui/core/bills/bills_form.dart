@@ -147,15 +147,16 @@ class _BillsFormState extends State<BillsForm> {
                   });
                 },
               ),
-              CheckboxListTile(
-                title: const Text('Paid'),
-                value: _paid,
-                onChanged: (value) {
-                  setState(() {
-                    _paid = value!;
-                  });
-                },
-              ),
+              if (widget.isEdit)
+                CheckboxListTile(
+                  title: const Text('Paid'),
+                  value: _paid,
+                  onChanged: (value) {
+                    setState(() {
+                      _paid = value!;
+                    });
+                  },
+                ),
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
@@ -163,6 +164,7 @@ class _BillsFormState extends State<BillsForm> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       final bill = Bill(
+                        id: widget.bill?.id ?? 0,
                         name: _nameController.text,
                         value: double.parse(_valueController.text),
                         date: _date,
