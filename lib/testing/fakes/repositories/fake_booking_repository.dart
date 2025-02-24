@@ -6,6 +6,7 @@ import 'package:bills_reminder/domain/models/bill.dart';
 class FakeBookingRepository implements BillsRepository {
   final List<Bill> _bills = [
     Bill(
+      id: 1,
       name: 'Electricity',
       date: DateTime.now(),
       notification: true,
@@ -14,6 +15,7 @@ class FakeBookingRepository implements BillsRepository {
       value: 100,
     ),
     Bill(
+      id: 2,
       name: 'Gas',
       date: DateTime.now().add(const Duration(days: 1)),
       notification: true,
@@ -29,6 +31,11 @@ class FakeBookingRepository implements BillsRepository {
   }
 
   @override
+  Future<Bill> getBill(String id) async {
+    return _bills.firstWhere((bill) => bill.id == int.parse(id));
+  }
+
+  @override
   Future<void> addBill(Bill bill) async {
     _bills.add(bill);
   }
@@ -36,5 +43,12 @@ class FakeBookingRepository implements BillsRepository {
   @override
   Future<void> deleteBills() async {
     _bills.clear();
+  }
+
+  @override
+  Future<void> updateBill(Bill bill) async {
+    final index = _bills.indexWhere((element) => element.id == bill.id);
+
+    _bills[index] = bill;
   }
 }
