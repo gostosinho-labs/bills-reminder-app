@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class BillsCreateScreen extends StatefulWidget {
-  const BillsCreateScreen({super.key, required this.viewModel});
-
-  final BillsCreateViewModel viewModel;
+  const BillsCreateScreen({super.key});
 
   @override
   State<BillsCreateScreen> createState() => _BillsCreateScreenState();
@@ -22,11 +21,13 @@ class _BillsCreateScreenState extends State<BillsCreateScreen> {
   DateTime _selectedDate = DateTime.now();
   bool _notificationEnabled = false;
   bool _recurrenceEnabled = false;
+  late BillsCreateViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
     _dateController.text = DateFormat.yMMMd().format(_selectedDate);
+    _viewModel = BillsCreateViewModel(repository: context.read());
   }
 
   @override
@@ -63,7 +64,7 @@ class _BillsCreateScreenState extends State<BillsCreateScreen> {
           IconButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                widget.viewModel.createBill(
+                _viewModel.createBill(
                   name: _nameController.text,
                   value: double.parse(_valueController.text),
                   date: _selectedDate,
@@ -163,7 +164,7 @@ class _BillsCreateScreenState extends State<BillsCreateScreen> {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        await widget.viewModel.createBill(
+                        await _viewModel.createBill(
                           name: _nameController.text,
                           value: double.parse(_valueController.text),
                           date: _selectedDate,

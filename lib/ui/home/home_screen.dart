@@ -3,23 +3,25 @@ import 'package:bills_reminder/ui/core/bills/bill_list_view.dart';
 import 'package:bills_reminder/ui/home/home_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required HomeViewModel viewModel})
-    : _viewModel = viewModel;
-
-  final HomeViewModel _viewModel;
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late HomeViewModel _viewModel;
+
   @override
   void initState() {
     super.initState();
 
-    Future.microtask(() => widget._viewModel.getBills());
+    _viewModel = HomeViewModel(repository: context.read());
+
+    Future.microtask(() => _viewModel.getBills());
   }
 
   @override
@@ -33,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
             heroTag: 'add',
             onPressed: () async {
               await context.push(Routes.createBill);
-              await widget._viewModel.getBills();
+              await _viewModel.getBills();
             },
             child: const Icon(Icons.add),
           ),
@@ -41,25 +43,25 @@ class _HomeScreenState extends State<HomeScreen> {
           FloatingActionButton(
             heroTag: 'delete',
             onPressed: () async {
-              await widget._viewModel.deleteBills();
-              await widget._viewModel.getBills();
+              await _viewModel.deleteBills();
+              await _viewModel.getBills();
             },
             child: const Icon(Icons.delete),
           ),
         ],
       ),
       body: ListenableBuilder(
-        listenable: widget._viewModel,
+        listenable: _viewModel,
         builder: (context, _) {
-          if (widget._viewModel.error != null) {
-            return Center(child: Text('Error: ${widget._viewModel.error}'));
+          if (_viewModel.error != null) {
+            return Center(child: Text('Error: ${_viewModel.error}'));
           }
 
-          if (widget._viewModel.isLoading) {
+          if (_viewModel.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final bills = widget._viewModel.bills;
+          final bills = _viewModel.bills;
 
           if (bills.isEmpty) {
             return const Center(child: Text('No bills found.'));

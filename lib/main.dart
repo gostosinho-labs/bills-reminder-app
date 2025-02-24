@@ -1,5 +1,4 @@
 import 'package:bills_reminder/dependencies/local_providers.dart';
-import 'package:bills_reminder/dependencies/view_models_providers.dart';
 import 'package:bills_reminder/routing/router.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -22,7 +21,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [...localProviders(), ...viewModelsProviders()],
+      providers: localProviders(),
       child: MaterialApp.router(routerConfig: router),
     );
   }
