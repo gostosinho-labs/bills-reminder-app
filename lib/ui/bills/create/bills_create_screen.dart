@@ -15,6 +15,7 @@ class BillsCreateScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Create Bill')),
       body: BillsForm(
+        isEdit: false,
         onSave: (Bill bill) async {
           await viewModel.createBill(
             name: bill.name,
@@ -28,7 +29,6 @@ class BillsCreateScreen extends StatelessWidget {
             context.pop();
           }
         },
-        isEdit: false,
       ),
     );
   }

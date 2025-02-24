@@ -15,6 +15,7 @@ class BillsCreateViewModel {
     required bool recurrence,
   }) async {
     final bill = Bill(
+      id: 0,
       name: name,
       value: value,
       date: date,
