@@ -1,40 +1,55 @@
 import 'dart:collection';
 
-import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
+import 'package:bills_reminder/data/services/bills/bills_service.dart';
+import 'package:bills_reminder/data/services/bills_notification/bills_notification_service.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
 
 import 'bills_repository.dart';
 
 class BillsRepositoryLocal implements BillsRepository {
-  BillsRepositoryLocal({required BillsServiceDatabase billsServiceDatabase})
-    : _billsServiceDatabase = billsServiceDatabase;
+  BillsRepositoryLocal({
+    required BillsService billsService,
+    required BillsNotificationService billsNotificationService,
+  }) : _billsService = billsService,
+       _billsNotificationService = billsNotificationService;
 
-  final BillsServiceDatabase _billsServiceDatabase;
+  final BillsService _billsService;
+  final BillsNotificationService _billsNotificationService;
 
   @override
   Future<UnmodifiableListView<Bill>> getBills() async {
-    final bills = await _billsServiceDatabase.getBills();
+    final bills = await _billsService.getBills();
 
     return UnmodifiableListView(bills);
   }
 
   @override
   Future<Bill> getBill(String id) {
-    return _billsServiceDatabase.getBill(id);
+    return _billsService.getBill(id);
   }
 
   @override
-  Future<void> addBill(Bill bill) {
-    return _billsServiceDatabase.addBill(bill);
+  Future<void> addBill(Bill bill) async {
+    await _billsService.addBill(bill);
+
+    if (bill.notification) {
+      await _billsNotificationService.schedule(bill);
+    }
   }
 
   @override
-  Future<void> updateBill(Bill bill) {
-    return _billsServiceDatabase.updateBill(bill);
+  Future<void> updateBill(Bill bill) async {
+    await _billsService.updateBill(bill);
+
+    if (bill.notification) {
+      await _billsNotificationService.schedule(bill);
+    } else {
+      await _billsNotificationService.cancel(bill);
+    }
   }
 
   @override
   Future<void> deleteBills() {
-    return _billsServiceDatabase.deleteBills();
+    return _billsService.deleteBills();
   }
 }
