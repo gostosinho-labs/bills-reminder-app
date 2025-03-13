@@ -44,7 +44,6 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
             ? scheduledDate.add(const Duration(days: 1))
             : scheduledDate;
 
-    // TODO: Consider using `periodicallyShow` to schedule the notification.
     await _notifications.zonedSchedule(
       bill.id,
       bill.name,
@@ -71,6 +70,7 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
