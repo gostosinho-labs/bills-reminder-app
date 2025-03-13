@@ -1,16 +1,18 @@
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class BillsNotificationServiceLocal implements BillsNotificationService {
-  BillsNotificationServiceLocal();
+  static final _notifications = FlutterLocalNotificationsPlugin();
 
-  final _notifications = FlutterLocalNotificationsPlugin();
-
-  Future<void> initialize() async {
+  static Future<void> initialize() async {
     tz.initializeTimeZones();
+
+    final timezone = await FlutterTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timezone));
 
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',

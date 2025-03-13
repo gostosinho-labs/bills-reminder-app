@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await BillsNotificationServiceLocal().initialize();
+  await BillsNotificationServiceLocal.initialize();
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((rec) {
     debugPrint(
