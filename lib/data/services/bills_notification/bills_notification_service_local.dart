@@ -44,10 +44,11 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
             ? scheduledDate.add(const Duration(days: 1))
             : scheduledDate;
 
+    // TODO: Consider using `periodicallyShow` to schedule the notification.
     await _notifications.zonedSchedule(
       bill.id,
       bill.name,
-      '${bill.name} is due - ${bill.value}',
+      'Value: ${bill.value}',
       date,
       NotificationDetails(
         android: AndroidNotificationDetails(
@@ -55,8 +56,17 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
           'Bills Notifications',
           channelDescription: 'Notifications for bill payments',
           importance: Importance.high,
+          priority: Priority.max,
+          ticker: 'ticker',
+          subText: 'Value: ${bill.value}',
         ),
-        iOS: const DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+          interruptionLevel: InterruptionLevel.timeSensitive,
+          subtitle: 'Value: ${bill.value}',
+        ),
       ),
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
