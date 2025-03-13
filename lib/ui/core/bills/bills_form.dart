@@ -120,10 +120,11 @@ class _BillsFormState extends State<BillsForm> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _dateController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Date',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.calendar_today),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: const Icon(Icons.calendar_today),
+                  helperText: 'The notification will be sent at 08:00 AM',
                 ),
                 readOnly: true,
                 onTap: () => _selectDate(context),
