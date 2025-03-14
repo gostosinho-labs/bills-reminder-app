@@ -44,6 +44,7 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
             ? scheduledDate.add(const Duration(days: 1))
             : scheduledDate;
 
+    // TODO: Update this to be monthly instead of daily.
     final matchComponents = bill.recurrence ? DateTimeComponents.time : null;
 
     await _notifications.zonedSchedule(
