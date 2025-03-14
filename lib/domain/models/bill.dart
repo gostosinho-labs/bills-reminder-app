@@ -14,7 +14,7 @@ class Bill {
     required this.notification,
     required this.recurrence,
     required this.paid,
-    this.value,
+    required this.value,
   });
 
   Bill copyWith({
