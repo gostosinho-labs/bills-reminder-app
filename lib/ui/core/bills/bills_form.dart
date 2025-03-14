@@ -141,6 +141,9 @@ class _BillsFormState extends State<BillsForm> {
               ),
               CheckboxListTile(
                 title: const Text('Monthly Recurrence'),
+                subtitle: const Text(
+                  'When paid, reschedule for the next month',
+                ),
                 value: _recurrence,
                 onChanged: (value) {
                   setState(() {

@@ -42,14 +42,17 @@ class BillsEditViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (bill.recurrence && bill.paid && bill.date.isBefore(DateTime.now())) {
-        bill = bill.copyWith(
-          paid: false,
-          date: DateTime(bill.date.year, bill.date.month + 1, bill.date.day),
-        );
-      }
-
       await _repository.updateBill(bill);
+
+      if (bill.recurrence && bill.paid) {
+        final newBill = bill.copyWith(
+          id: 0,
+          date: DateTime(bill.date.year, bill.date.month + 1, bill.date.day),
+          paid: false,
+        );
+
+        await _repository.addBill(newBill);
+      }
     } catch (e) {
       _error = e;
       _log.severe('Error updating bill', e);
