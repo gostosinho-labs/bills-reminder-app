@@ -5,7 +5,7 @@ class Bill {
   final bool notification;
   final bool recurrence;
   final bool paid;
-  final double value;
+  final double? value;
 
   Bill({
     required this.id,
@@ -14,7 +14,7 @@ class Bill {
     required this.notification,
     required this.recurrence,
     required this.paid,
-    required this.value,
+    this.value,
   });
 
   // Booleans are represented as integers in the database.

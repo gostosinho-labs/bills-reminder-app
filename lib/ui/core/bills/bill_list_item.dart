@@ -24,7 +24,7 @@ class BillListItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '\$${bill.value.toStringAsFixed(2)}',
+              bill.value != null ? '\${bill.value!.toStringAsFixed(2)}' : '',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Row(

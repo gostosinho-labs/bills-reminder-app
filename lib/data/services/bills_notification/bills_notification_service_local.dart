@@ -47,7 +47,7 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
     await _notifications.zonedSchedule(
       bill.id,
       bill.name,
-      'Value: ${bill.value}',
+      'Due today ${bill.value != null ? '(${bill.value})' : ''}',
       date,
       NotificationDetails(
         android: AndroidNotificationDetails(

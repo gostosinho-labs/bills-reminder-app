@@ -42,7 +42,7 @@ class _BillsFormState extends State<BillsForm> {
     _paid = bill?.paid ?? false;
 
     _nameController.text = bill?.name ?? '';
-    _valueController.text = bill?.value.toStringAsFixed(2) ?? '';
+    _valueController.text = bill?.value?.toStringAsFixed(2) ?? '';
     _dateController.text = DateFormat.yMMMd().format(_date);
   }
 
@@ -102,13 +102,13 @@ class _BillsFormState extends State<BillsForm> {
                 decoration: const InputDecoration(
                   labelText: 'Bill Value',
                   border: OutlineInputBorder(),
+                  helperText: 'Leave empty for bills with variable value',
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a bill value';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter a valid number';
+                  if (value != null && value.isNotEmpty) {
+                    if (double.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
                   }
                   return null;
                 },
@@ -167,7 +167,10 @@ class _BillsFormState extends State<BillsForm> {
                       final bill = Bill(
                         id: widget.bill?.id ?? 0,
                         name: _nameController.text,
-                        value: double.parse(_valueController.text),
+                        value:
+                            _valueController.text.isNotEmpty
+                                ? double.parse(_valueController.text)
+                                : null,
                         date: _date,
                         notification: _notification,
                         recurrence: _recurrence,
