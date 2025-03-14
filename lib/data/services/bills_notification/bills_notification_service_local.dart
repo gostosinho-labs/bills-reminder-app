@@ -78,4 +78,9 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
   Future<void> cancel(Bill bill) async {
     await _notifications.cancel(bill.id);
   }
+
+  @override
+  Future<void> cancelAll() async {
+    await _notifications.cancelAll();
+  }
 }
