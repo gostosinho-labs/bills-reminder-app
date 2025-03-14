@@ -56,15 +56,12 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
           channelDescription: 'Notifications for bill payments',
           importance: Importance.high,
           priority: Priority.max,
-          ticker: 'ticker',
-          subText: 'Value: ${bill.value}',
         ),
         iOS: DarwinNotificationDetails(
           presentAlert: true,
           presentBadge: true,
           presentSound: true,
           interruptionLevel: InterruptionLevel.timeSensitive,
-          subtitle: 'Value: ${bill.value}',
         ),
       ),
       uiLocalNotificationDateInterpretation:
