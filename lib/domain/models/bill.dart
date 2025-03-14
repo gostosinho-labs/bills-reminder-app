@@ -17,6 +17,26 @@ class Bill {
     this.value,
   });
 
+  Bill copyWith({
+    int? id,
+    String? name,
+    DateTime? date,
+    bool? notification,
+    bool? recurrence,
+    bool? paid,
+    double? value,
+  }) {
+    return Bill(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      date: date ?? this.date,
+      notification: notification ?? this.notification,
+      recurrence: recurrence ?? this.recurrence,
+      paid: paid ?? this.paid,
+      value: value ?? this.value,
+    );
+  }
+
   // Booleans are represented as integers in the database.
   Map<String, dynamic> toMap() {
     return {
