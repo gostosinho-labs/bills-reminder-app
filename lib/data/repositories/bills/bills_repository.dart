@@ -8,4 +8,5 @@ abstract class BillsRepository {
   Future<void> addBill(Bill bill);
   Future<void> updateBill(Bill bill);
   Future<void> deleteBills();
+  Future<void> deleteBill(Bill bill);
 }

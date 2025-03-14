@@ -55,4 +55,10 @@ class BillsRepositoryLocal implements BillsRepository {
     await _billsService.deleteBills();
     await _billsNotificationService.cancelAll();
   }
+
+  @override
+  Future<void> deleteBill(Bill bill) async {
+    await _billsService.deleteBill(bill);
+    await _billsNotificationService.cancel(bill);
+  }
 }

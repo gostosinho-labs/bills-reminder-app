@@ -7,11 +7,13 @@ class BillsForm extends StatefulWidget {
   const BillsForm({
     super.key,
     required this.onSave,
+    required this.onDelete,
     required this.isEdit,
     this.bill,
   });
 
   final Function(Bill bill) onSave;
+  final Function(Bill bill)? onDelete;
   final bool isEdit;
   final Bill? bill;
 
@@ -186,6 +188,37 @@ class _BillsFormState extends State<BillsForm> {
                   child: Text(widget.isEdit ? 'Edit Bill' : 'Create Bill'),
                 ),
               ),
+              if (widget.isEdit) ...[
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      final bill = Bill(
+                        id: widget.bill?.id ?? 0,
+                        name: _nameController.text,
+                        value:
+                            _valueController.text.isNotEmpty
+                                ? double.parse(_valueController.text)
+                                : null,
+                        date: _date,
+                        notification: _notification,
+                        recurrence: _recurrence,
+                        paid: _paid,
+                      );
+
+                      widget.onDelete?.call(bill);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      foregroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    child: const Text('Delete Bill'),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

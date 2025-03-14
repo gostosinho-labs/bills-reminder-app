@@ -61,4 +61,22 @@ class BillsEditViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> deleteBill(Bill bill) async {
+    _isLoading = true;
+    _error = null;
+
+    notifyListeners();
+
+    try {
+      await _repository.deleteBill(bill);
+    } catch (e) {
+      _error = e;
+      _log.severe('Error deleting bill', e);
+    } finally {
+      _isLoading = false;
+
+      notifyListeners();
+    }
+  }
 }

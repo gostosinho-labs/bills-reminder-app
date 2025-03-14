@@ -51,4 +51,9 @@ class FakeBookingRepository implements BillsRepository {
 
     _bills[index] = bill;
   }
+
+  @override
+  Future<void> deleteBill(Bill bill) async {
+    _bills.remove(bill);
+  }
 }

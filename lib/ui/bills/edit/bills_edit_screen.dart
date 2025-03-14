@@ -54,6 +54,13 @@ class _BillsEditScreenState extends State<BillsEditScreen> {
                       context.pop();
                     }
                   },
+                  onDelete: (Bill bill) async {
+                    await _viewModel.deleteBill(bill);
+
+                    if (context.mounted) {
+                      context.pop();
+                    }
+                  },
                 );
           },
         ),

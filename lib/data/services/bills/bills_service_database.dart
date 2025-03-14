@@ -54,4 +54,11 @@ class BillsServiceDatabase implements BillsService {
 
     await database.delete('bills');
   }
+
+  @override
+  Future<void> deleteBill(Bill bill) async {
+    final database = await BillsDatabase.instance.database;
+
+    await database.delete('bills', where: 'id = ?', whereArgs: [bill.id]);
+  }
 }

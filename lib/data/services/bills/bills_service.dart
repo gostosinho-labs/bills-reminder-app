@@ -6,4 +6,5 @@ abstract class BillsService {
   Future<int> addBill(Bill bill);
   Future<void> updateBill(Bill bill);
   Future<void> deleteBills();
+  Future<void> deleteBill(Bill bill);
 }

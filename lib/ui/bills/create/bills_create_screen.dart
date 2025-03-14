@@ -29,6 +29,7 @@ class BillsCreateScreen extends StatelessWidget {
             context.pop();
           }
         },
+        onDelete: null,
       ),
     );
   }
