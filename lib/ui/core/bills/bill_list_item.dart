@@ -14,17 +14,25 @@ class BillListItem extends StatelessWidget {
       Localizations.localeOf(context).toString(),
     );
 
+    final isDue = bill.date.isBefore(DateTime.now());
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
         title: Text(bill.name),
-        subtitle: Text(dateFormat.format(bill.date)),
+        subtitle: Text(
+          dateFormat.format(bill.date),
+          style: TextStyle(
+            color: isDue ? Colors.red : null,
+            fontWeight: isDue ? FontWeight.bold : null,
+          ),
+        ),
         trailing: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              bill.value != null ? '\${bill.value!.toStringAsFixed(2)}' : '',
+              bill.value != null ? bill.value!.toStringAsFixed(2) : '',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Row(
