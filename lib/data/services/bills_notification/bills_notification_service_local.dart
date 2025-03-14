@@ -44,6 +44,8 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
             ? scheduledDate.add(const Duration(days: 1))
             : scheduledDate;
 
+    final matchComponents = bill.recurrence ? DateTimeComponents.time : null;
+
     await _notifications.zonedSchedule(
       bill.id,
       bill.name,
@@ -67,7 +69,7 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
+      matchDateTimeComponents: matchComponents,
     );
   }
 
