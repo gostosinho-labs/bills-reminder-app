@@ -30,7 +30,9 @@ class BillsRepositoryLocal implements BillsRepository {
 
   @override
   Future<void> addBill(Bill bill) async {
-    await _billsService.addBill(bill);
+    final id = await _billsService.addBill(bill);
+
+    bill = bill.copyWith(id: id);
 
     if (bill.notification) {
       await _billsNotificationService.schedule(bill);

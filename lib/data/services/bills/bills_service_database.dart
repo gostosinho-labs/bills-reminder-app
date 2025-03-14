@@ -25,10 +25,10 @@ class BillsServiceDatabase implements BillsService {
   }
 
   @override
-  Future<void> addBill(Bill bill) async {
+  Future<int> addBill(Bill bill) async {
     final database = await BillsDatabase.instance.database;
 
-    await database.insert(
+    return await database.insert(
       'bills',
       bill.toMap(),
       conflictAlgorithm: ConflictAlgorithm.fail,
