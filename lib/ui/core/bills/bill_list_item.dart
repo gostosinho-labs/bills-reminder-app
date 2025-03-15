@@ -15,6 +15,7 @@ class BillListItem extends StatelessWidget {
     );
 
     final isDue = bill.date.isBefore(DateTime.now());
+    final isPaid = bill.paid;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -23,8 +24,8 @@ class BillListItem extends StatelessWidget {
         subtitle: Text(
           dateFormat.format(bill.date),
           style: TextStyle(
-            color: isDue ? Colors.red : null,
-            fontWeight: isDue ? FontWeight.bold : null,
+            color: !isPaid && isDue ? Colors.red : null,
+            fontWeight: !isPaid && isDue ? FontWeight.bold : null,
           ),
         ),
         trailing: Column(
