@@ -17,12 +17,14 @@ class BillListView extends StatelessWidget {
 
     String? currentMonthYear;
 
-    return ListView.builder(
+    return ListView.separated(
+      // The bottom padding is needed or the floating action buttons would cover the last items.
       padding: const EdgeInsets.only(bottom: 192),
       itemCount: bills.length,
+      separatorBuilder: (context, index) => const Divider(height: 0),
       itemBuilder: (context, index) {
         final bill = bills[index];
-        final monthYear = dateFormat.format(bill.date);
+        final monthYear = dateFormat.format(bill.date).toUpperCase();
 
         final bool showMonthYear = currentMonthYear != monthYear;
 
@@ -34,8 +36,15 @@ class BillListView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (showMonthYear)
-              Padding(
-                padding: const EdgeInsets.all(16),
+              Container(
+                margin: index == 0 ? null : const EdgeInsets.only(top: 24),
+                padding: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 16,
+                  bottom: 8,
+                ),
+                width: double.infinity,
                 child: Text(
                   monthYear,
                   style: Theme.of(context).textTheme.bodyMedium,
