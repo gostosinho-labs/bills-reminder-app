@@ -43,7 +43,7 @@ class BillsRepositoryLocal implements BillsRepository {
   Future<void> updateBill(Bill bill) async {
     await _billsService.updateBill(bill);
 
-    if (bill.notification) {
+    if (bill.notification && bill.date.isAfter(DateTime.now())) {
       await _billsNotificationService.schedule(bill);
     } else {
       await _billsNotificationService.cancel(bill);
