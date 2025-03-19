@@ -7,7 +7,10 @@ class BillsServiceDatabase implements BillsService {
   @override
   Future<List<Bill>> getBills() async {
     final database = await BillsDatabase.instance.database;
-    final List<Map<String, dynamic>> maps = await database.query('bills');
+    final List<Map<String, dynamic>> maps = await database.query(
+      'bills',
+      orderBy: 'date ASC',
+    );
 
     return List.generate(maps.length, (i) => Bill.fromMap(maps[i]));
   }
