@@ -13,30 +13,31 @@ class BillListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('MMMM');
+    final dateFormat = DateFormat('MMMM/yyyy');
 
-    String? currentMonth;
+    String? currentMonthYear;
 
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 192),
       itemCount: bills.length,
       itemBuilder: (context, index) {
         final bill = bills[index];
-        final month = dateFormat.format(bill.date);
+        final monthYear = dateFormat.format(bill.date);
 
-        final bool showMonth = currentMonth != month;
+        final bool showMonthYear = currentMonthYear != monthYear;
 
-        if (showMonth) {
-          currentMonth = month;
+        if (showMonthYear) {
+          currentMonthYear = monthYear;
         }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (showMonth)
+            if (showMonthYear)
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  month,
+                  monthYear,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
