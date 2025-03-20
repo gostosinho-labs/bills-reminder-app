@@ -136,7 +136,6 @@ class _BillsFormState extends State<BillsForm> {
                     labelText: 'Date',
                     border: const OutlineInputBorder(),
                     suffixIcon: const Icon(Icons.calendar_today),
-                    helperText: 'The notification will be sent at 08:00 AM',
                   ),
                   readOnly: true,
                   onTap: () => _selectDate(context),
@@ -145,6 +144,7 @@ class _BillsFormState extends State<BillsForm> {
               const SizedBox(height: 16),
               CheckboxListTile(
                 title: const Text('Notification'),
+                subtitle: const Text('Sent at 08:00 AM'),
                 value: _notification,
                 onChanged: (value) {
                   setState(() {
