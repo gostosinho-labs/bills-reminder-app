@@ -85,7 +85,7 @@ class _BillsFormState extends State<BillsForm> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: TextFormField(
-                  autofocus: true,
+                  autofocus: !widget.isEdit,
                   controller: _nameController,
                   decoration: const InputDecoration(
                     labelText: 'Bill Name',
