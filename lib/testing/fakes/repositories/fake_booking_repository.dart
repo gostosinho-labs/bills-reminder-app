@@ -31,8 +31,8 @@ class FakeBookingRepository implements BillsRepository {
   }
 
   @override
-  Future<Bill> getBill(String id) async {
-    return _bills.firstWhere((bill) => bill.id == int.parse(id));
+  Future<Bill> getBill(int id) async {
+    return _bills.firstWhere((bill) => bill.id == id);
   }
 
   @override
