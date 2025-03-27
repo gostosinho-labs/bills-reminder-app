@@ -1,6 +1,17 @@
+import 'package:bills_reminder/dependencies/local_providers.dart';
+import 'package:bills_reminder/routing/router.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 
 void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((rec) {
+    debugPrint(
+      '${rec.loggerName} ${rec.level.name} [${rec.time.toIso8601String()}]: ${rec.message}',
+    );
+  });
+
   runApp(const MainApp());
 }
 
@@ -9,8 +20,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
+    return MultiProvider(
+      providers: localProviders(),
+      child: MaterialApp.router(routerConfig: router),
     );
   }
 }
