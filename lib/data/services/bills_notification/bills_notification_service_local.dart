@@ -64,8 +64,6 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
           interruptionLevel: InterruptionLevel.timeSensitive,
         ),
       ),
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
