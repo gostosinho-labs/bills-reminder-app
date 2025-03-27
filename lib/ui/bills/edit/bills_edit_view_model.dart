@@ -42,9 +42,11 @@ class BillsEditViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final originalBill = await _repository.getBill(bill.id);
+
       await _repository.updateBill(bill);
 
-      if (bill.recurrence && bill.paid) {
+      if (!originalBill.paid && bill.recurrence && bill.paid) {
         final newBill = bill.copyWith(
           id: 0,
           date: DateTime(bill.date.year, bill.date.month + 1, bill.date.day),
