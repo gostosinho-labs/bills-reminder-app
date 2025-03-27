@@ -9,7 +9,7 @@ class BillsCreateViewModel {
 
   Future<void> createBill({
     required String name,
-    required double value,
+    required double? value,
     required DateTime date,
     required bool notification,
     required bool recurrence,

@@ -7,11 +7,13 @@ class BillsForm extends StatefulWidget {
   const BillsForm({
     super.key,
     required this.onSave,
+    required this.onDelete,
     required this.isEdit,
     this.bill,
   });
 
   final Function(Bill bill) onSave;
+  final Function(Bill bill)? onDelete;
   final bool isEdit;
   final Bill? bill;
 
@@ -42,7 +44,7 @@ class _BillsFormState extends State<BillsForm> {
     _paid = bill?.paid ?? false;
 
     _nameController.text = bill?.name ?? '';
-    _valueController.text = bill?.value.toStringAsFixed(2) ?? '';
+    _valueController.text = bill?.value?.toStringAsFixed(2) ?? '';
     _dateController.text = DateFormat.yMMMd().format(_date);
   }
 
@@ -77,60 +79,72 @@ class _BillsFormState extends State<BillsForm> {
       key: _formKey,
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           child: Column(
             children: <Widget>[
-              TextFormField(
-                autofocus: true,
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Bill Name',
-                  border: OutlineInputBorder(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextFormField(
+                  autofocus: !widget.isEdit,
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Bill Name',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a bill name';
+                    }
+                    return null;
+                  },
+                  textInputAction: TextInputAction.next,
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a bill name';
-                  }
-                  return null;
-                },
-                textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _valueController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Bill Value',
-                  border: OutlineInputBorder(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextFormField(
+                  controller: _valueController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: 'Bill Value',
+                    border: OutlineInputBorder(),
+                    helperText: 'Leave empty for bills with variable value',
+                  ),
+                  validator: (value) {
+                    if (value != null && value.isNotEmpty) {
+                      if (double.tryParse(value) == null) {
+                        return 'Please enter a valid number';
+                      }
+                    }
+                    return null;
+                  },
+                  textInputAction: TextInputAction.next,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'^\d+\.?\d{0,2}'),
+                    ),
+                  ],
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a bill value';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter a valid number';
-                  }
-                  return null;
-                },
-                textInputAction: TextInputAction.next,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-                ],
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _dateController,
-                decoration: const InputDecoration(
-                  labelText: 'Date',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.calendar_today),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextFormField(
+                  controller: _dateController,
+                  decoration: InputDecoration(
+                    labelText: 'Date',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: const Icon(Icons.calendar_today),
+                  ),
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
                 ),
-                readOnly: true,
-                onTap: () => _selectDate(context),
               ),
               const SizedBox(height: 16),
               CheckboxListTile(
                 title: const Text('Notification'),
+                subtitle: const Text('Sent at 08:00 AM'),
                 value: _notification,
                 onChanged: (value) {
                   setState(() {
@@ -140,6 +154,9 @@ class _BillsFormState extends State<BillsForm> {
               ),
               CheckboxListTile(
                 title: const Text('Monthly Recurrence'),
+                subtitle: const Text(
+                  'When paid, reschedule for the next month',
+                ),
                 value: _recurrence,
                 onChanged: (value) {
                   setState(() {
@@ -158,27 +175,67 @@ class _BillsFormState extends State<BillsForm> {
                   },
                 ),
               const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      final bill = Bill(
-                        id: widget.bill?.id ?? 0,
-                        name: _nameController.text,
-                        value: double.parse(_valueController.text),
-                        date: _date,
-                        notification: _notification,
-                        recurrence: _recurrence,
-                        paid: _paid,
-                      );
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        final bill = Bill(
+                          id: widget.bill?.id ?? 0,
+                          name: _nameController.text,
+                          value:
+                              _valueController.text.isNotEmpty
+                                  ? double.parse(_valueController.text)
+                                  : null,
+                          date: _date,
+                          notification: _notification,
+                          recurrence: _recurrence,
+                          paid: _paid,
+                        );
 
-                      widget.onSave(bill);
-                    }
-                  },
-                  child: Text(widget.isEdit ? 'Edit Bill' : 'Create Bill'),
+                        widget.onSave(bill);
+                      }
+                    },
+                    child: Text(widget.isEdit ? 'Edit Bill' : 'Create Bill'),
+                  ),
                 ),
               ),
+              if (widget.isEdit) ...[
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        final bill = Bill(
+                          id: widget.bill?.id ?? 0,
+                          name: _nameController.text,
+                          value:
+                              _valueController.text.isNotEmpty
+                                  ? double.parse(_valueController.text)
+                                  : null,
+                          date: _date,
+                          notification: _notification,
+                          recurrence: _recurrence,
+                          paid: _paid,
+                        );
+
+                        widget.onDelete?.call(bill);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        foregroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                      child: const Text('Delete Bill'),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

@@ -14,58 +14,71 @@ class BillListItem extends StatelessWidget {
       Localizations.localeOf(context).toString(),
     );
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: ListTile(
-        title: Text(bill.name),
-        subtitle: Text(dateFormat.format(bill.date)),
-        trailing: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.center,
+    final isDue = bill.date.isBefore(DateTime.now());
+    final isPaid = bill.paid;
+
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
           children: [
-            Text(
-              '\$${bill.value.toStringAsFixed(2)}',
-              style: Theme.of(context).textTheme.titleMedium,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    bill.name,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    dateFormat.format(bill.date),
+                    style: TextStyle(
+                      color: !isPaid && isDue ? Colors.red : null,
+                      fontWeight: !isPaid && isDue ? FontWeight.bold : null,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (bill.notification)
-                  Icon(
-                    Icons.notifications_active,
-                    size: 16,
-                    color: Colors.grey.shade600,
-                  )
-                else
-                  Icon(
-                    Icons.notifications_off,
-                    size: 16,
-                    color: Colors.grey.shade600,
-                  ),
-                const SizedBox(width: 4),
-                if (bill.recurrence)
-                  Icon(Icons.update, size: 20, color: Colors.grey.shade600)
-                else
-                  Icon(
-                    Icons.update_disabled,
-                    size: 20,
-                    color: Colors.grey.shade600,
-                  ),
-                const SizedBox(width: 4),
-                if (bill.paid)
-                  Icon(Icons.check_box, size: 20, color: Colors.grey.shade600)
-                else
-                  Icon(
-                    Icons.check_box_outline_blank,
-                    size: 16,
-                    color: Colors.grey.shade600,
-                  ),
+                Text(
+                  bill.value != null ? bill.value!.toStringAsFixed(2) : '',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      bill.notification
+                          ? Icons.notifications_active
+                          : Icons.notifications_off,
+                      size: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(
+                      bill.recurrence ? Icons.update : Icons.update_disabled,
+                      size: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(
+                      bill.paid
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      size: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
         ),
-        onTap: onTap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

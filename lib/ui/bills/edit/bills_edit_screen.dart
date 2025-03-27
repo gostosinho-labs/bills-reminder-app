@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class BillsEditScreen extends StatefulWidget {
   const BillsEditScreen({super.key, required this.id});
 
-  final String id;
+  final int id;
 
   @override
   State<BillsEditScreen> createState() => _BillsEditScreenState();
@@ -49,6 +49,13 @@ class _BillsEditScreenState extends State<BillsEditScreen> {
                   isEdit: true,
                   onSave: (Bill bill) async {
                     await _viewModel.updateBill(bill);
+
+                    if (context.mounted) {
+                      context.pop();
+                    }
+                  },
+                  onDelete: (Bill bill) async {
+                    await _viewModel.deleteBill(bill);
 
                     if (context.mounted) {
                       context.pop();

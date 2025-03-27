@@ -12,13 +12,16 @@ class HomeViewModel extends ChangeNotifier {
   final BillsRepository _repository;
   final _log = Logger('HomeViewModel');
 
-  UnmodifiableListView<Bill> _bills = UnmodifiableListView([]);
+  UnmodifiableListView<Bill> _pendingBills = UnmodifiableListView([]);
+  UnmodifiableListView<Bill> _paidBills = UnmodifiableListView([]);
   bool _isLoading = false;
   Object? _error;
 
-  UnmodifiableListView<Bill> get bills => _bills;
   bool get isLoading => _isLoading;
   Object? get error => _error;
+
+  UnmodifiableListView<Bill> get pendingBills => _pendingBills;
+  UnmodifiableListView<Bill> get paidBills => _paidBills;
 
   Future<void> getBills() async {
     _log.fine('Bills loading');
@@ -30,7 +33,9 @@ class HomeViewModel extends ChangeNotifier {
 
     try {
       final bills = await _repository.getBills();
-      _bills = UnmodifiableListView(bills);
+
+      _pendingBills = UnmodifiableListView(bills.where((bill) => !bill.paid));
+      _paidBills = UnmodifiableListView(bills.where((bill) => bill.paid));
 
       _log.fine('Bills loaded: ${bills.length}');
     } catch (e) {

@@ -12,7 +12,7 @@ void main() {
     await viewModel.getBills();
 
     // Assert
-    expect(viewModel.bills.length, 2);
+    expect(viewModel.pendingBills.length, 2);
   });
 
   test('delete bills', () async {
@@ -25,6 +25,6 @@ void main() {
     await viewModel.deleteBills();
 
     // Assert
-    expect(viewModel.bills.length, 0);
+    expect(viewModel.pendingBills.length, 0);
   });
 }

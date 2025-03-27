@@ -18,7 +18,7 @@ class BillsEditViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   Object? get error => _error;
 
-  Future<void> loadBill(String id) async {
+  Future<void> loadBill(int id) async {
     _isLoading = true;
     _error = null;
 
@@ -42,12 +42,42 @@ class BillsEditViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final originalBill = await _repository.getBill(bill.id);
+
       await _repository.updateBill(bill);
+
+      if (!originalBill.paid && bill.recurrence && bill.paid) {
+        final newBill = bill.copyWith(
+          id: 0,
+          date: DateTime(bill.date.year, bill.date.month + 1, bill.date.day),
+          paid: false,
+        );
+
+        await _repository.addBill(newBill);
+      }
     } catch (e) {
       _error = e;
       _log.severe('Error updating bill', e);
     } finally {
       _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteBill(Bill bill) async {
+    _isLoading = true;
+    _error = null;
+
+    notifyListeners();
+
+    try {
+      await _repository.deleteBill(bill);
+    } catch (e) {
+      _error = e;
+      _log.severe('Error deleting bill', e);
+    } finally {
+      _isLoading = false;
+
       notifyListeners();
     }
   }

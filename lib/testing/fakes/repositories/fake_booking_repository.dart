@@ -31,8 +31,8 @@ class FakeBookingRepository implements BillsRepository {
   }
 
   @override
-  Future<Bill> getBill(String id) async {
-    return _bills.firstWhere((bill) => bill.id == int.parse(id));
+  Future<Bill> getBill(int id) async {
+    return _bills.firstWhere((bill) => bill.id == id);
   }
 
   @override
@@ -50,5 +50,10 @@ class FakeBookingRepository implements BillsRepository {
     final index = _bills.indexWhere((element) => element.id == bill.id);
 
     _bills[index] = bill;
+  }
+
+  @override
+  Future<void> deleteBill(Bill bill) async {
+    _bills.remove(bill);
   }
 }

@@ -7,13 +7,16 @@ class BillsServiceDatabase implements BillsService {
   @override
   Future<List<Bill>> getBills() async {
     final database = await BillsDatabase.instance.database;
-    final List<Map<String, dynamic>> maps = await database.query('bills');
+    final List<Map<String, dynamic>> maps = await database.query(
+      'bills',
+      orderBy: 'date ASC',
+    );
 
     return List.generate(maps.length, (i) => Bill.fromMap(maps[i]));
   }
 
   @override
-  Future<Bill> getBill(String id) async {
+  Future<Bill> getBill(int id) async {
     final database = await BillsDatabase.instance.database;
     final List<Map<String, dynamic>> maps = await database.query(
       'bills',
@@ -25,10 +28,10 @@ class BillsServiceDatabase implements BillsService {
   }
 
   @override
-  Future<void> addBill(Bill bill) async {
+  Future<int> addBill(Bill bill) async {
     final database = await BillsDatabase.instance.database;
 
-    await database.insert(
+    return await database.insert(
       'bills',
       bill.toMap(),
       conflictAlgorithm: ConflictAlgorithm.fail,
@@ -53,5 +56,12 @@ class BillsServiceDatabase implements BillsService {
     final database = await BillsDatabase.instance.database;
 
     await database.delete('bills');
+  }
+
+  @override
+  Future<void> deleteBill(Bill bill) async {
+    final database = await BillsDatabase.instance.database;
+
+    await database.delete('bills', where: 'id = ?', whereArgs: [bill.id]);
   }
 }
