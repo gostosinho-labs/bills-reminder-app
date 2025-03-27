@@ -1,4 +1,5 @@
 class Bill {
+  final int id;
   final String name;
   final DateTime date;
   final bool notification;
@@ -7,6 +8,7 @@ class Bill {
   final double value;
 
   Bill({
+    required this.id,
     required this.name,
     required this.date,
     required this.notification,
@@ -30,6 +32,7 @@ class Bill {
   // Booleans are represented as integers in the database.
   factory Bill.fromMap(Map<String, dynamic> map) {
     return Bill(
+      id: map['id'],
       name: map['name'],
       date: DateTime.parse(map['date']),
       notification: map['notification'] == 1,

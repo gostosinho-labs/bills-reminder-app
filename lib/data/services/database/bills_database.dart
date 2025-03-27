@@ -26,13 +26,13 @@ class BillsDatabase {
   Future<void> _onCreate(Database database, int version) async {
     await database.execute('''
       CREATE TABLE bills (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         date TEXT,
         notification INTEGER,
         recurrence INTEGER,
         paid INTEGER,
-        value REAL,
-        id INTEGER PRIMARY KEY AUTOINCREMENT
+        value REAL
       )
     ''');
   }

@@ -1,17 +1,25 @@
-import 'package:bills_reminder/routing/routes.dart';
 import 'package:bills_reminder/ui/bills/create/bills_create_screen.dart';
+import 'package:bills_reminder/ui/bills/edit/bills_edit_screen.dart';
 import 'package:bills_reminder/ui/home/home_screen.dart';
 import 'package:go_router/go_router.dart';
 
-GoRouter router = GoRouter(
+final router = GoRouter(
   routes: [
     GoRoute(
-      path: Routes.home,
-      builder: (context, state) => HomeScreen(key: state.pageKey),
-    ),
-    GoRoute(
-      path: Routes.createBill,
-      builder: (context, state) => BillsCreateScreen(key: state.pageKey),
+      path: '/',
+      builder: (context, state) => const HomeScreen(),
+      routes: [
+        GoRoute(
+          path: 'bills/create',
+          builder: (context, state) => const BillsCreateScreen(),
+        ),
+        GoRoute(
+          path: 'bills/:id',
+          builder:
+              (context, state) =>
+                  BillsEditScreen(id: state.pathParameters['id']!),
+        ),
+      ],
     ),
   ],
 );
