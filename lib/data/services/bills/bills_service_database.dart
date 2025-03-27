@@ -16,7 +16,7 @@ class BillsServiceDatabase implements BillsService {
   }
 
   @override
-  Future<Bill> getBill(String id) async {
+  Future<Bill> getBill(int id) async {
     final database = await BillsDatabase.instance.database;
     final List<Map<String, dynamic>> maps = await database.query(
       'bills',

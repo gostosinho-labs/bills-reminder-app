@@ -18,7 +18,7 @@ class BillsEditViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   Object? get error => _error;
 
-  Future<void> loadBill(String id) async {
+  Future<void> loadBill(int id) async {
     _isLoading = true;
     _error = null;
 

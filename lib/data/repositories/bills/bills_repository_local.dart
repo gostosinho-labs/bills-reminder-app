@@ -24,7 +24,7 @@ class BillsRepositoryLocal implements BillsRepository {
   }
 
   @override
-  Future<Bill> getBill(String id) {
+  Future<Bill> getBill(int id) {
     return _billsService.getBill(id);
   }
 
