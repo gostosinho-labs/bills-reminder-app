@@ -133,7 +133,7 @@ class _BillsFormState extends State<BillsForm> {
                 child: TextFormField(
                   controller: _dateController,
                   decoration: InputDecoration(
-                    labelText: 'Date',
+                    labelText: 'Bill Date',
                     border: const OutlineInputBorder(),
                     suffixIcon: const Icon(Icons.calendar_today),
                   ),
