@@ -10,9 +10,9 @@ class BillListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat.MMMd(
-      Localizations.localeOf(context).toString(),
-    );
+    final locale = Localizations.localeOf(context).toString();
+    final dateFormat = DateFormat.MMMd(locale);
+    final numberFormat = NumberFormat.simpleCurrency(locale: locale);
 
     final isDue = bill.date.isBefore(DateTime.now());
     final isPaid = bill.paid;
@@ -46,7 +46,7 @@ class BillListItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  bill.value != null ? bill.value!.toStringAsFixed(2) : '',
+                  bill.value != null ? numberFormat.format(bill.value) : '',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Row(
