@@ -34,7 +34,7 @@ class BillsRepositoryLocal implements BillsRepository {
 
     bill = bill.copyWith(id: id);
 
-    if (bill.notification) {
+    if (bill.notification && bill.date.isAfter(DateTime.now())) {
       await _billsNotificationService.schedule(bill);
     }
   }
