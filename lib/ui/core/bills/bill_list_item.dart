@@ -65,14 +65,6 @@ class BillListItem extends StatelessWidget {
                       size: 16,
                       color: Colors.grey.shade600,
                     ),
-                    const SizedBox(width: 2),
-                    Icon(
-                      bill.paid
-                          ? Icons.check_box
-                          : Icons.check_box_outline_blank,
-                      size: 16,
-                      color: Colors.grey.shade600,
-                    ),
                   ],
                 ),
               ],
