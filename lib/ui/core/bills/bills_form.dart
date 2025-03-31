@@ -198,7 +198,7 @@ class _BillsFormState extends State<BillsForm> {
                         widget.onSave(bill);
                       }
                     },
-                    child: Text(widget.isEdit ? 'Edit Bill' : 'Create Bill'),
+                    child: Text('Save Bill'),
                   ),
                 ),
               ),
