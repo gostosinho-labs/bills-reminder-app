@@ -59,10 +59,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 16),
           FloatingActionButton(
             heroTag: 'delete',
-            onPressed: () async {
-              await _viewModel.deleteBills();
-              await _viewModel.getBills();
-            },
+            onPressed: () => _onDeleteAll(context),
             child: const Icon(Icons.delete),
           ),
         ],
@@ -102,5 +99,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         await _viewModel.getBills();
       },
     );
+  }
+
+  Future<void> _onDeleteAll(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete All Bills?'),
+            content: const Text(
+              'Are you sure you want to delete all bills? This action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    );
+
+    if (confirmed == true) {
+      await _viewModel.deleteBills();
+      await _viewModel.getBills();
+    }
   }
 }
