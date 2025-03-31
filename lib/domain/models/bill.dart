@@ -45,7 +45,7 @@ class Bill {
       'notification': notification ? 1 : 0,
       'recurrence': recurrence ? 1 : 0,
       'paid': paid ? 1 : 0,
-      'value': value,
+      'value': value == 0 ? null : value,
     };
   }
 
