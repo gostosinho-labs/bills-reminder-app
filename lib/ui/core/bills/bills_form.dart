@@ -61,7 +61,7 @@ class _BillsFormState extends State<BillsForm> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _date,
-      firstDate: DateTime.now(),
+      firstDate: DateTime(DateTime.now().year, DateTime.now().month, 1),
       lastDate: DateTime(DateTime.now().year + 1),
     );
 
