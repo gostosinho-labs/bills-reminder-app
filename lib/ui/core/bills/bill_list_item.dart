@@ -10,7 +10,7 @@ class BillListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat.yMMMd(
+    final dateFormat = DateFormat.MMMd(
       Localizations.localeOf(context).toString(),
     );
 
