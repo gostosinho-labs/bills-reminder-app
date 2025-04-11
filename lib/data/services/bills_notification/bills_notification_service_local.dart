@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -26,6 +27,25 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
     await _notifications.initialize(
       const InitializationSettings(android: androidSettings, iOS: iosSettings),
     );
+
+    if (Platform.isAndroid) {
+      final androidNotifications =
+          _notifications
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()!;
+
+      await androidNotifications.requestNotificationsPermission();
+      await androidNotifications.requestExactAlarmsPermission();
+      await androidNotifications.createNotificationChannel(
+        AndroidNotificationChannel(
+          'bills_channel',
+          'Bills Notifications',
+          description: 'Notifications for bill payments',
+          importance: Importance.max,
+        ),
+      );
+    }
   }
 
   @override
@@ -37,34 +57,34 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       bill.date.day,
       8, // 8 AM
     );
-
-    // If the scheduled date is in the past, schedule for the next day
     final date =
         scheduledDate.isBefore(DateTime.now())
             ? scheduledDate.add(const Duration(days: 1))
             : scheduledDate;
+
+    final notificationDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'bills_channel',
+        'Bills Notifications',
+        channelDescription: 'Notifications for bill payments',
+        importance: Importance.max,
+        priority: Priority.max,
+      ),
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+        interruptionLevel: InterruptionLevel.timeSensitive,
+      ),
+    );
 
     await _notifications.zonedSchedule(
       bill.id,
       bill.name,
       'Due today ${bill.value != null ? '(${bill.value})' : ''}',
       date,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'bills_channel',
-          'Bills Notifications',
-          channelDescription: 'Notifications for bill payments',
-          importance: Importance.high,
-          priority: Priority.max,
-        ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-          interruptionLevel: InterruptionLevel.timeSensitive,
-        ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      notificationDetails,
+      androidScheduleMode: AndroidScheduleMode.alarmClock,
     );
   }
 
