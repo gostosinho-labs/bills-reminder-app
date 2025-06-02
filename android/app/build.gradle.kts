@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.bills_reminder"
+    namespace = "com.lsviana.bills_reminder"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -24,7 +24,8 @@ android {
         applicationId = "com.lsviana.bills_reminder"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // minSdk = flutter.minSdkVersion
+        minSdk = 33 // Needed to show notifications correctly.
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
