@@ -1,8 +1,7 @@
 import 'package:bills_reminder/domain/models/bill.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:bills_reminder/ui/core/bills/text_currency_form_field.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BillsForm extends StatefulWidget {
   const BillsForm({
