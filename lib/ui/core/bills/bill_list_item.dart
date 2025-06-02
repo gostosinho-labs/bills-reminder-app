@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class BillListItem extends StatelessWidget {
-  const BillListItem({super.key, required this.bill, required this.onTap});
+  const BillListItem({super.key, required this.bill, required this.onTap, this.hideDate = false});
 
   final Bill bill;
   final VoidCallback onTap;
+  final bool hideDate;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class BillListItem extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   Text(
-                    dateFormat.format(bill.date),
+                    hideDate ? '' : dateFormat.format(bill.date),
                     style: TextStyle(
                       color: !isPaid && isDue ? Colors.red : null,
                       fontWeight: !isPaid && isDue ? FontWeight.bold : null,
