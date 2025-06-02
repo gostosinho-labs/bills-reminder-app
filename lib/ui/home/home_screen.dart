@@ -63,6 +63,12 @@ class _HomeScreenState extends State<HomeScreen>
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
+            heroTag: 'calendar',
+            onPressed: () => context.push(Routes.calendar),
+            child: const Icon(Icons.calendar_month),
+          ),
+          const SizedBox(height: 16),
+          FloatingActionButton(
             heroTag: 'add',
             onPressed: () async {
               await context.push(Routes.createBill);
