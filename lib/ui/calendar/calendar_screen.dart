@@ -30,7 +30,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Calendar View')),
+      appBar: AppBar(title: const Text('Calendar')),
       body: ListenableBuilder(
         listenable: _viewModel,
         builder: (context, child) {
@@ -49,6 +49,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               _buildMonthPicker(),
               _buildCalendarHeader(),
               _buildCalendarGrid(billsMap),
+              _buildCalendarFooter(),
             ],
           );
         },
@@ -84,7 +85,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           for (final day in weekDays)
             Expanded(
@@ -101,72 +101,86 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _buildCalendarGrid(Map<DateTime, List<Bill>> billsMap) {
     return Expanded(
-      child: GridView.builder(
-        padding: const EdgeInsets.all(16.0),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 7,
-          childAspectRatio: 1.0,
-        ),
-        itemCount: _daysInMonth.length,
-        itemBuilder: (context, index) {
-          final date = _daysInMonth[index];
-          final isToday = _isToday(date);
-          final billsForDay =
-              billsMap[DateTime(date.year, date.month, date.day)] ?? [];
-          final isCurrentMonth = date.month == _viewModel.selectedMonth.month;
-
-          return GestureDetector(
-            onTap: () {
-              if (isCurrentMonth) {
-                _showBillsForDay(date, billsMap);
-              }
-            },
-            child: Container(
-              margin: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                color:
-                    isToday
-                        ? Theme.of(context).primaryColor.withOpacity(0.2)
-                        : null,
-                border:
-                    isToday
-                        ? Border.all(
+      child: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          if (details.primaryVelocity! > 0) {
+            _changeMonth(-1);
+          } else {
+            _changeMonth(1);
+          }
+        },
+        child: GridView.builder(
+          padding: const EdgeInsets.all(16.0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 7,
+            childAspectRatio: 1.0,
+          ),
+          itemCount: _daysInMonth.length,
+          itemBuilder: (context, index) {
+            final date = _daysInMonth[index];
+            final isToday = _isToday(date);
+            final billsForDay =
+                billsMap[DateTime(date.year, date.month, date.day)] ?? [];
+            final isCurrentMonth = date.month == _viewModel.selectedMonth.month;
+        
+            return GestureDetector(
+              onTap: () {
+                if (isCurrentMonth) {
+                  _showBillsForDay(date, billsMap);
+                }
+              },
+              child: Container(
+                margin: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: isToday
+                      ? Theme.of(context).primaryColor.withValues(alpha: 0.2)
+                      : null,
+                  border: isToday
+                      ? Border.all(
                           color: Theme.of(context).primaryColor,
                           width: 1,
                         )
-                        : null,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '${date.day}',
-                    style: TextStyle(
-                      color:
-                          isCurrentMonth
-                              ? isToday
+                      : null,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${date.day}',
+                      style: TextStyle(
+                        color: isCurrentMonth
+                            ? isToday
                                   ? Theme.of(context).primaryColor
                                   : null
-                              : Colors.grey.withOpacity(0.5),
+                            : Colors.grey.withValues(alpha: 0.5),
+                      ),
                     ),
-                  ),
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color:
-                          billsForDay.isNotEmpty && isCurrentMonth
-                              ? Colors.blueAccent
-                              : null,
-                      shape: BoxShape.circle,
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: billsForDay.isNotEmpty && isCurrentMonth
+                            ? Colors.blueAccent
+                            : null,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCalendarFooter() {
+    return SafeArea(
+      child: Text(
+        'Swipe horizontally to change month.',
+        style: Theme.of(context).textTheme.bodySmall,
       ),
     );
   }
@@ -226,16 +240,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final lastDay = DateTime(month.year, month.month + 1, 0);
 
     // Find the first Monday before the first day of the month
-    final firstMonday =
-        firstDay.weekday == DateTime.monday
-            ? firstDay
-            : firstDay.subtract(Duration(days: firstDay.weekday - 1));
+    final firstMonday = firstDay.weekday == DateTime.monday
+        ? firstDay
+        : firstDay.subtract(Duration(days: firstDay.weekday - 1));
 
     // Find the last Sunday after the last day of the month
-    final lastSunday =
-        lastDay.weekday == DateTime.sunday
-            ? lastDay
-            : lastDay.add(Duration(days: 7 - lastDay.weekday));
+    final lastSunday = lastDay.weekday == DateTime.sunday
+        ? lastDay
+        : lastDay.add(Duration(days: 7 - lastDay.weekday));
 
     // Generate all days from first Monday to last Sunday
     final daysInView = <DateTime>[];
