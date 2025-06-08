@@ -47,7 +47,7 @@ class BillListItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  bill.value != null ? numberFormat.format(bill.value) : '',
+                  bill.value != null ? numberFormat.format(bill.value) : '-',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Row(
