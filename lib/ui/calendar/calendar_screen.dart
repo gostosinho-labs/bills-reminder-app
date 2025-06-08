@@ -130,7 +130,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 }
               },
               child: Container(
-                margin: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
                   color: isToday
                       ? Theme.of(context).primaryColor.withValues(alpha: 0.2)
