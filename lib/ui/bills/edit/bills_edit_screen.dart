@@ -34,10 +34,6 @@ class _BillsEditScreenState extends State<BillsEditScreen> {
         body: ListenableBuilder(
           listenable: _viewModel,
           builder: (context, _) {
-            if (_viewModel.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
             if (_viewModel.error != null) {
               return Center(child: Text('Error: ${_viewModel.error}'));
             }
