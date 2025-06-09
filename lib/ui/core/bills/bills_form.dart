@@ -146,41 +146,31 @@ class _BillsFormState extends State<BillsForm> {
                   });
                 },
               ),
-              if (widget.isEdit)
-                CheckboxListTile(
-                  title: const Text('Paid'),
-                  value: _paid,
-                  onChanged: (value) {
-                    setState(() {
-                      _paid = value!;
-                    });
-                  },
+              const SizedBox(height: 8),
+              if (widget.isEdit) ...[
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _togglePaymentBill,
+                      child: Text(widget.bill!.paid ? 'Unpay Bill' : 'Pay Bill'),
+                    ),
+                  ),
                 ),
-              const SizedBox(height: 16),
+              ],
+              const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        final bill = Bill(
-                          id: widget.bill?.id ?? 0,
-                          name: _nameController.text,
-                          value:
-                              _valueController.text.isNotEmpty
-                                  ? double.parse(_valueController.text)
-                                  : null,
-                          date: _date,
-                          notification: _notification,
-                          recurrence: _recurrence,
-                          paid: _paid,
-                        );
-
-                        widget.onSave(bill);
-                      }
-                    },
-                    child: Text('Save Bill'),
+                  child: widget.isEdit ? OutlinedButton(
+                    onPressed: _saveBill,
+                    child: const Text('Save Bill'),
+                  ) : ElevatedButton(
+                    onPressed: _saveBill,
+                    child: const Text('Save Bill'),
                   ),
                 ),
               ),
@@ -195,10 +185,9 @@ class _BillsFormState extends State<BillsForm> {
                         final bill = Bill(
                           id: widget.bill?.id ?? 0,
                           name: _nameController.text,
-                          value:
-                              _valueController.text.isNotEmpty
-                                  ? double.parse(_valueController.text)
-                                  : null,
+                          value: _valueController.text.isNotEmpty
+                              ? double.parse(_valueController.text)
+                              : null,
                           date: _date,
                           notification: _notification,
                           recurrence: _recurrence,
@@ -223,5 +212,28 @@ class _BillsFormState extends State<BillsForm> {
         ),
       ),
     );
+  }
+
+  void _togglePaymentBill() {
+    _paid = !_paid;
+    _saveBill();
+  }
+
+  void _saveBill() {
+    if (_formKey.currentState!.validate()) {
+      final bill = Bill(
+        id: widget.bill?.id ?? 0,
+        name: _nameController.text,
+        value: _valueController.text.isNotEmpty
+            ? double.parse(_valueController.text)
+            : null,
+        date: _date,
+        notification: _notification,
+        recurrence: _recurrence,
+        paid: _paid,
+      );
+
+      widget.onSave(bill);
+    }
   }
 }
