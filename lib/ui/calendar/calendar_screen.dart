@@ -121,6 +121,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             final isToday = _isToday(date);
             final billsForDay =
                 billsMap[DateTime(date.year, date.month, date.day)] ?? [];
+            final unpaidBills = billsForDay.any((x) => !x.paid);
             final isCurrentMonth = date.month == _viewModel.selectedMonth.month;
         
             return GestureDetector(
@@ -160,9 +161,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       height: 8,
                       decoration: BoxDecoration(
                         color: billsForDay.isNotEmpty && isCurrentMonth
-                            ? Colors.blueAccent
+                            ? unpaidBills ? Colors.blueAccent : Colors.grey
                             : null,
-                        shape: BoxShape.circle,
+                        shape: BoxShape.circle
                       ),
                     ),
                   ],
