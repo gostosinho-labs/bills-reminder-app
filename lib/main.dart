@@ -1,3 +1,5 @@
+import 'package:bills_reminder/data/services/background/bills_background_service.dart';
+import 'package:bills_reminder/data/services/background/bills_background_service_local.dart';
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
 import 'package:bills_reminder/dependencies/local_providers.dart';
 import 'package:bills_reminder/routing/router.dart';
@@ -7,7 +9,10 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await BillsNotificationServiceLocal.initialize();
+  await BillsNotificationServiceLocal.initializeTimezone();
+  await BillsNotificationServiceLocal.initializeNotification();
+  await BillsNotificationServiceLocal.initializeNotificationPermissions();
+  await BillsBackgroundServiceLocal.initialize();
 
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((rec) {
@@ -27,6 +32,13 @@ class MainApp extends StatelessWidget {
     return MultiProvider(
       providers: localProviders(),
       child: MaterialApp.router(routerConfig: router),
+      builder: (context, child) {
+        final backgroundService = context.read<BillsBackgroundService>();
+
+        backgroundService.registerDailyReminder();
+
+        return child!;
+      },
     );
   }
 }
