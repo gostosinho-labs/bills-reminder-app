@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -7,14 +8,16 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class BillsNotificationServiceLocal implements BillsNotificationService {
-  static final _notifications = FlutterLocalNotificationsPlugin();
+  static final notification = FlutterLocalNotificationsPlugin();
 
-  static Future<void> initialize() async {
+  static Future<void> initializeTimezone() async {
     tz.initializeTimeZones();
 
     final timezone = await FlutterTimezone.getLocalTimezone();
     tz.setLocalLocation(tz.getLocation(timezone));
+  }
 
+  static Future<void> initializeNotification() async {
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
@@ -24,16 +27,17 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       requestSoundPermission: true,
     );
 
-    await _notifications.initialize(
+    await notification.initialize(
       const InitializationSettings(android: androidSettings, iOS: iosSettings),
     );
+  }
 
+  static Future<void> initializeNotificationPermissions() async {
     if (Platform.isAndroid) {
-      final androidNotifications =
-          _notifications
-              .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin
-              >()!;
+      final androidNotifications = notification
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()!;
 
       await androidNotifications.requestNotificationsPermission();
       await androidNotifications.requestExactAlarmsPermission();
@@ -57,10 +61,9 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       bill.date.day,
       8, // 8 AM
     );
-    final date =
-        scheduledDate.isBefore(DateTime.now())
-            ? scheduledDate.add(const Duration(days: 1))
-            : scheduledDate;
+    final date = scheduledDate.isBefore(DateTime.now())
+        ? scheduledDate.add(const Duration(days: 1))
+        : scheduledDate;
 
     final notificationDetails = NotificationDetails(
       android: AndroidNotificationDetails(
@@ -78,7 +81,7 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       ),
     );
 
-    await _notifications.zonedSchedule(
+    await notification.zonedSchedule(
       bill.id,
       bill.name,
       'Due today ${bill.value != null ? '(${bill.value})' : ''}',
@@ -90,11 +93,11 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
 
   @override
   Future<void> cancel(Bill bill) async {
-    await _notifications.cancel(bill.id);
+    await notification.cancel(bill.id);
   }
 
   @override
   Future<void> cancelAll() async {
-    await _notifications.cancelAll();
+    await notification.cancelAll();
   }
 }
