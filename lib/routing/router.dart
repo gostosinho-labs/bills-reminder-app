@@ -16,9 +16,8 @@ final router = GoRouter(
         ),
         GoRoute(
           path: 'bills/:id',
-          builder:
-              (context, state) =>
-                  BillsEditScreen(id: int.parse(state.pathParameters['id']!)),
+          builder: (context, state) =>
+              BillsEditScreen(id: int.parse(state.pathParameters['id']!)),
         ),
         GoRoute(
           path: 'calendar',
