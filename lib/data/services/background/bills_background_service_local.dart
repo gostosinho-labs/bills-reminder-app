@@ -1,4 +1,3 @@
-import 'package:bills_reminder/data/services/bills/bills_service.dart';
 import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
 import 'package:flutter/material.dart';
@@ -21,10 +20,23 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
 
   @override
   Future<void> registerDailyReminder() async {
+    final now = DateTime.now();
+    final today9am = DateTime(now.year, now.month, now.day, 9);
+    final next9am = today9am.isAfter(now)
+        ? today9am
+        : today9am.add(const Duration(days: 1));
+    final initialDelay = next9am.difference(now);
+
+    _workManager.cancelAll();
+    _workManager.registerOneOffTask(
+      "$dailyReminderUniqueName-once",
+      "$dailyReminderTaskName-once",
+    );
     _workManager.registerPeriodicTask(
       dailyReminderUniqueName,
       dailyReminderTaskName,
-      frequency: const Duration(minutes: 15),
+      frequency: const Duration(hours: 1),
+      initialDelay: initialDelay,
       existingWorkPolicy: ExistingWorkPolicy.replace,
       backoffPolicy: BackoffPolicy.linear,
     );
@@ -62,9 +74,10 @@ Future<bool> backgroundDailyReminder() async {
     ),
   );
 
-  final BillsService database = BillsServiceDatabase();
-  final now = DateTime.now();
+  final database = BillsServiceDatabase();
+  final notification = FlutterLocalNotificationsPlugin();
 
+  final now = DateTime.now();
   final bills = await database.getBills();
   final relevantBills = bills
       .where((bill) => bill.date.isBefore(now))
@@ -78,7 +91,7 @@ Future<bool> backgroundDailyReminder() async {
 
   final billWord = relevantBills.length > 1 ? 'bills' : 'bill';
 
-  await BillsNotificationServiceLocal.notification.show(
+  await notification.show(
     BillsBackgroundServiceLocal.dailyReminderNotificationId,
     'Daily Reminder',
     'You have ${relevantBills.length} past due $billWord.',
