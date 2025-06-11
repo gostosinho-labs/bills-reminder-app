@@ -47,7 +47,7 @@ class BillListView extends StatelessWidget {
                 width: double.infinity,
                 child: Text(
                   monthYear,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
             BillListItem(bill: bill, onTap: () => onEdit(bill)),

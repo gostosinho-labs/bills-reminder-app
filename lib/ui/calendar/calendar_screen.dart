@@ -123,7 +123,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 billsMap[DateTime(date.year, date.month, date.day)] ?? [];
             final unpaidBills = billsForDay.any((x) => !x.paid);
             final isCurrentMonth = date.month == _viewModel.selectedMonth.month;
-        
+
+            final theme = Theme.of(context);
+            final primaryColor = theme.colorScheme.primary;
+
             return GestureDetector(
               onTap: () {
                 if (isCurrentMonth) {
@@ -132,14 +135,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: isToday
-                      ? Theme.of(context).primaryColor.withValues(alpha: 0.2)
-                      : null,
+                  color: isToday ? primaryColor.withOpacity(0.1) : null,
                   border: isToday
-                      ? Border.all(
-                          color: Theme.of(context).primaryColor,
-                          width: 1,
-                        )
+                      ? Border.all(color: primaryColor, width: 1)
                       : null,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -149,11 +147,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     Text(
                       '${date.day}',
                       style: TextStyle(
-                        color: isCurrentMonth
-                            ? isToday
-                                  ? Theme.of(context).primaryColor
-                                  : null
-                            : Colors.grey.withValues(alpha: 0.5),
+                        color: !isCurrentMonth
+                            ? theme.colorScheme.onSurface.withOpacity(0.5)
+                            : isToday
+                            ? primaryColor
+                            : theme.colorScheme.onSurface,
                       ),
                     ),
                     Container(
@@ -161,9 +159,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       height: 8,
                       decoration: BoxDecoration(
                         color: billsForDay.isNotEmpty && isCurrentMonth
-                            ? unpaidBills ? Colors.blueAccent : Colors.grey
+                            ? unpaidBills
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.outline
                             : null,
-                        shape: BoxShape.circle
+                        shape: BoxShape.circle,
                       ),
                     ),
                   ],
