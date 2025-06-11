@@ -31,11 +31,27 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: localProviders(),
-      child: MaterialApp.router(routerConfig: router),
+      child: MaterialApp.router(
+        routerConfig: router,
+        title: 'Bills Reminder',
+        themeMode: ThemeMode.system,
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.blue,
+            brightness: Brightness.light,
+          ),
+        ),
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.blue,
+            brightness: Brightness.dark,
+          ),
+        ),
+      ),
       builder: (context, child) {
-        final backgroundService = context.read<BillsBackgroundService>();
-
-        backgroundService.registerDailyReminder();
+        context.read<BillsBackgroundService>().registerDailyReminder();
 
         return child!;
       },
