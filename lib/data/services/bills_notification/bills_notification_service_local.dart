@@ -8,7 +8,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class BillsNotificationServiceLocal implements BillsNotificationService {
-  static final notification = FlutterLocalNotificationsPlugin();
+  static final _notification = FlutterLocalNotificationsPlugin();
 
   static Future<void> initializeTimezone() async {
     tz.initializeTimeZones();
@@ -27,14 +27,14 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       requestSoundPermission: true,
     );
 
-    await notification.initialize(
+    await _notification.initialize(
       const InitializationSettings(android: androidSettings, iOS: iosSettings),
     );
   }
 
   static Future<void> initializeNotificationPermissions() async {
     if (Platform.isAndroid) {
-      final androidNotifications = notification
+      final androidNotifications = _notification
           .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin
           >()!;
@@ -81,7 +81,7 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       ),
     );
 
-    await notification.zonedSchedule(
+    await _notification.zonedSchedule(
       bill.id,
       bill.name,
       'Due today ${bill.value != null ? '(${bill.value})' : ''}',
@@ -93,11 +93,11 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
 
   @override
   Future<void> cancel(Bill bill) async {
-    await notification.cancel(bill.id);
+    await _notification.cancel(bill.id);
   }
 
   @override
   Future<void> cancelAll() async {
-    await notification.cancelAll();
+    await _notification.cancelAll();
   }
 }
