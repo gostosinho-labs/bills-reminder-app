@@ -19,7 +19,7 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
 
   static Future<void> initializeNotification() async {
     const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
+      '@mipmap/launcher_icon',
     );
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
