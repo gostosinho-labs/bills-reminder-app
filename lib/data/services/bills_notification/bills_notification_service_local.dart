@@ -69,7 +69,7 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       android: AndroidNotificationDetails(
         'bills_channel',
         'Bills Notifications',
-        channelDescription: 'Notifications for bill payments',
+        channelDescription: 'Scheduled notifications for bill payments.',
         importance: Importance.max,
         priority: Priority.max,
       ),
@@ -88,6 +88,34 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       date,
       notificationDetails,
       androidScheduleMode: AndroidScheduleMode.alarmClock,
+    );
+  }
+
+  @override
+  Future<void> show(Bill bill) async {
+    final notificationDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'bills_channel',
+        'Bills Notifications',
+        channelDescription: 'Immediate notifications for bill payments.',
+        importance: Importance.max,
+        priority: Priority.max,
+      ),
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
+
+    final days = DateTime.now().difference(bill.date).inDays;
+    final dayWord = days == 1 ? 'day' : 'days';
+
+    await _notification.show(
+      bill.id * -1, // Invert to avoid conflicts with scheduled notifications.
+      bill.name,
+      'Overdue bill $days $dayWord late: ${bill.value != null ? '(${bill.value})' : ''}',
+      notificationDetails,
     );
   }
 
