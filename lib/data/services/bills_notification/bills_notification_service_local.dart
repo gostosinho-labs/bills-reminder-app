@@ -111,10 +111,14 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
     final days = DateTime.now().difference(bill.date).inDays;
     final dayWord = days == 1 ? 'day' : 'days';
 
+    final initialMessage = days <= 0
+        ? 'Due today'
+        : 'Overdue bill $days $dayWord late';
+
     await _notification.show(
       bill.id * -1, // Invert to avoid conflicts with scheduled notifications.
       bill.name,
-      'Overdue bill $days $dayWord late: ${bill.value != null ? '(${bill.value})' : ''}',
+      '$initialMessage ${bill.value != null ? '(${bill.value})' : ''}',
       notificationDetails,
     );
   }
