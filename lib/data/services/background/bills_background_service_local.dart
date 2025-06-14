@@ -1,21 +1,20 @@
 import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'bills_background_service.dart';
 
 class BillsBackgroundServiceLocal implements BillsBackgroundService {
-  // Negative values not to conflict with bill IDs.
-  static final dailyReminderNotificationId = -1;
   static final dailyReminderUniqueName = 'daily-reminder';
   static final dailyReminderTaskName = 'Daily Reminder';
+  static final oneTimeReminderUniqueName = 'one-time-reminder';
+  static final oneTimeReminderTaskName = 'One Time Reminder';
 
   static final _workManager = Workmanager();
 
   static Future<void> initialize() async {
-    await _workManager.initialize(backgroundEntrypoint, isInDebugMode: true);
+    await _workManager.initialize(backgroundEntrypoint, isInDebugMode: false);
   }
 
   @override
@@ -29,8 +28,8 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
 
     _workManager.cancelAll();
     _workManager.registerOneOffTask(
-      "$dailyReminderUniqueName-once",
-      "$dailyReminderTaskName-once",
+      BillsBackgroundServiceLocal.oneTimeReminderUniqueName,
+      BillsBackgroundServiceLocal.oneTimeReminderTaskName,
     );
     _workManager.registerPeriodicTask(
       dailyReminderUniqueName,
@@ -46,36 +45,31 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
 @pragma('vm:entry-point')
 void backgroundEntrypoint() {
   BillsBackgroundServiceLocal._workManager.executeTask((task, inputData) async {
-    if (task == BillsBackgroundServiceLocal.dailyReminderTaskName) {
-      return await backgroundDailyReminder();
-    }
+    try {
+      if (task == BillsBackgroundServiceLocal.dailyReminderTaskName ||
+          task == BillsBackgroundServiceLocal.oneTimeReminderTaskName) {
+        await backgroundDailyReminder();
+      }
 
-    // For everything else, just mark the background task as complete.
-    return Future.value(true);
+      debugPrint('Background service: success on task "$task".');
+
+      // For everything else, just mark the background task as complete.
+      return Future.value(true);
+    } catch (err) {
+      debugPrint('Background service: error ($err).');
+
+      throw Exception(err);
+    }
   });
 }
 
-Future<bool> backgroundDailyReminder() async {
-  BillsNotificationServiceLocal.initializeNotification();
-
-  final notificationDetails = NotificationDetails(
-    android: AndroidNotificationDetails(
-      'reminder_channel',
-      'Reminder Notifications',
-      channelDescription: 'Notifications for bill payments',
-      importance: Importance.max,
-      priority: Priority.max,
-    ),
-    iOS: DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      interruptionLevel: InterruptionLevel.timeSensitive,
-    ),
-  );
+Future<void> backgroundDailyReminder() async {
+  // await BillsNotificationServiceLocal.initializeTimezone();
+  // await BillsNotificationServiceLocal.initializeNotificationPermissions();
+  await BillsNotificationServiceLocal.initializeNotification();
 
   final database = BillsServiceDatabase();
-  final notification = FlutterLocalNotificationsPlugin();
+  final notification = BillsNotificationServiceLocal();
 
   final now = DateTime.now();
   final bills = await database.getBills();
@@ -85,18 +79,14 @@ Future<bool> backgroundDailyReminder() async {
       .toList();
 
   if (relevantBills.isEmpty) {
-    debugPrint('No relevant bills found for notification.');
-    return Future.value(true);
+    debugPrint('Background service: no relevant bills found for notification.');
+    return;
   }
 
-  final billWord = relevantBills.length > 1 ? 'bills' : 'bill';
-
-  await notification.show(
-    BillsBackgroundServiceLocal.dailyReminderNotificationId,
-    'Daily Reminder',
-    'You have ${relevantBills.length} past due $billWord.',
-    notificationDetails,
-  );
-
-  return Future.value(true);
+  for (final bill in relevantBills) {
+    debugPrint(
+      'Background service: notification for ${bill.name} (${bill.id}).',
+    );
+    await notification.show(bill);
+  }
 }
