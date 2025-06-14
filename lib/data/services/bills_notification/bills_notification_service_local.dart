@@ -87,7 +87,7 @@ class BillsNotificationServiceLocal implements BillsNotificationService {
       'Due today ${bill.value != null ? '(${bill.value})' : ''}',
       date,
       notificationDetails,
-      androidScheduleMode: AndroidScheduleMode.alarmClock,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 
