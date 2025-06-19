@@ -58,6 +58,11 @@ class _HomeScreenState extends State<HomeScreen>
           MenuAnchor(
             menuChildren: [
               MenuItemButton(
+                leadingIcon: const Icon(Icons.notifications),
+                child: const Text('Notification Settings'),
+                onPressed: () => _onNotificationSettings(context),
+              ),
+              MenuItemButton(
                 leadingIcon: const Icon(Icons.delete_outline),
                 child: const Text('Delete All Bills'),
                 onPressed: () => _onDeleteAll(context),
@@ -166,5 +171,9 @@ class _HomeScreenState extends State<HomeScreen>
       await _viewModel.deleteBills();
       await _viewModel.getBills();
     }
+  }
+
+  Future<void> _onNotificationSettings(BuildContext context) async {
+    context.push(Routes.settingsNotifications);
   }
 }
