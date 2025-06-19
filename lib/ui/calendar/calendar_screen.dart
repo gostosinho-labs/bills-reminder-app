@@ -135,7 +135,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: isToday ? primaryColor.withOpacity(0.1) : null,
+                  color: isToday ? primaryColor.withValues(alpha: 0.1) : null,
                   border: isToday
                       ? Border.all(color: primaryColor, width: 1)
                       : null,
@@ -148,7 +148,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       '${date.day}',
                       style: TextStyle(
                         color: !isCurrentMonth
-                            ? theme.colorScheme.onSurface.withOpacity(0.5)
+                            ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
                             : isToday
                             ? primaryColor
                             : theme.colorScheme.onSurface,
