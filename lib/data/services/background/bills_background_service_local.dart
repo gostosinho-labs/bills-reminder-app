@@ -1,44 +1,71 @@
 import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
+import 'package:bills_reminder/data/services/preference/bills_preference_bool.dart';
+import 'package:bills_reminder/data/services/preference/bills_preference_service.dart';
 import 'package:flutter/material.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'bills_background_service.dart';
 
 class BillsBackgroundServiceLocal implements BillsBackgroundService {
-  static final dailyReminderUniqueName = 'daily-reminder';
-  static final dailyReminderTaskName = 'Daily Reminder';
-  static final oneTimeReminderUniqueName = 'one-time-reminder';
-  static final oneTimeReminderTaskName = 'One Time Reminder';
+  BillsBackgroundServiceLocal({
+    required BillsPreferenceService preferenceService,
+  }) : _preferenceService = preferenceService;
+
+  final BillsPreferenceService _preferenceService;
+
+  static final dailyNotificationUniqueName = 'daily-notification';
+  static final dailyNotificationTaskName = 'Daily Notification';
+  static final oneTimeNotificationUniqueName = 'one-time-notification';
+  static final oneTimeNotificationTaskName = 'One Time Notification';
 
   static final _workManager = Workmanager();
 
   static Future<void> initialize() async {
-    await _workManager.initialize(backgroundEntrypoint, isInDebugMode: false);
+    await _workManager.initialize(backgroundEntrypoint, isInDebugMode: true);
   }
 
   @override
-  Future<void> registerDailyReminder() async {
-    final now = DateTime.now();
-    final today9am = DateTime(now.year, now.month, now.day, 9);
-    final next9am = today9am.isAfter(now)
-        ? today9am
-        : today9am.add(const Duration(days: 1));
-    final initialDelay = next9am.difference(now);
+  Future<void> registerDailyNotification() async {
+    final startupNotification = await _preferenceService.isBool(
+      BillsPreferenceBool.startup,
+    );
+    final dailyNotification = await _preferenceService.isBool(
+      BillsPreferenceBool.daily,
+    );
 
     _workManager.cancelAll();
-    _workManager.registerOneOffTask(
-      BillsBackgroundServiceLocal.oneTimeReminderUniqueName,
-      BillsBackgroundServiceLocal.oneTimeReminderTaskName,
-    );
-    _workManager.registerPeriodicTask(
-      dailyReminderUniqueName,
-      dailyReminderTaskName,
-      frequency: const Duration(hours: 1),
-      initialDelay: initialDelay,
-      existingWorkPolicy: ExistingWorkPolicy.replace,
-      backoffPolicy: BackoffPolicy.linear,
-    );
+
+    if (startupNotification) {
+      _workManager.registerOneOffTask(
+        BillsBackgroundServiceLocal.oneTimeNotificationUniqueName,
+        BillsBackgroundServiceLocal.oneTimeNotificationTaskName,
+      );
+    }
+
+    if (dailyNotification) {
+      final now = DateTime.now();
+      final today9am = DateTime(now.year, now.month, now.day, 9);
+      final next9am = today9am.isAfter(now)
+          ? today9am
+          : today9am.add(const Duration(days: 1));
+      final initialDelay = next9am.difference(now);
+
+      _workManager.registerPeriodicTask(
+        dailyNotificationUniqueName,
+        dailyNotificationTaskName,
+        frequency: const Duration(hours: 1),
+        initialDelay: initialDelay,
+        existingWorkPolicy: ExistingWorkPolicy.replace,
+        backoffPolicy: BackoffPolicy.linear,
+      );
+    } else {
+      debugPrint(
+        'Background service: Daily notification is disabled, cancelling task.',
+      );
+
+      _workManager.cancelByUniqueName(dailyNotificationUniqueName);
+    }
   }
 }
 
@@ -46,8 +73,8 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
 void backgroundEntrypoint() {
   BillsBackgroundServiceLocal._workManager.executeTask((task, inputData) async {
     try {
-      if (task == BillsBackgroundServiceLocal.dailyReminderTaskName ||
-          task == BillsBackgroundServiceLocal.oneTimeReminderTaskName) {
+      if (task == BillsBackgroundServiceLocal.dailyNotificationTaskName ||
+          task == BillsBackgroundServiceLocal.oneTimeNotificationTaskName) {
         await backgroundDailyReminder();
       }
 
