@@ -51,7 +51,7 @@ class MainApp extends StatelessWidget {
         ),
       ),
       builder: (context, child) {
-        context.read<BillsBackgroundService>().registerDailyReminder();
+        context.read<BillsBackgroundService>().registerDailyNotification();
 
         return child!;
       },
