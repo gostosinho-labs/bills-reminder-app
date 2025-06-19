@@ -6,6 +6,8 @@ import 'package:bills_reminder/data/services/bills/bills_service.dart';
 import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service.dart';
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
+import 'package:bills_reminder/data/services/preference/bills_preference_service.dart';
+import 'package:bills_reminder/data/services/preference/bills_preference_service_local.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -18,7 +20,12 @@ List<SingleChildWidget> localProviders() {
     ),
     Provider(
       create: (context) =>
-          BillsBackgroundServiceLocal() as BillsBackgroundService,
+          BillsPreferenceServiceLocal() as BillsPreferenceService,
+    ),
+    Provider(
+      create: (context) =>
+          BillsBackgroundServiceLocal(preferenceService: context.read())
+              as BillsBackgroundService,
     ),
     Provider(
       create: (context) {
