@@ -2,7 +2,7 @@ import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
 import 'package:bills_reminder/data/services/preference/bills_preference_bool.dart';
 import 'package:bills_reminder/data/services/preference/bills_preference_service.dart';
-import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'bills_background_service.dart';
@@ -10,9 +10,11 @@ import 'bills_background_service.dart';
 class BillsBackgroundServiceLocal implements BillsBackgroundService {
   BillsBackgroundServiceLocal({
     required BillsPreferenceService preferenceService,
-  }) : _preferenceService = preferenceService;
+  }) : _preferenceService = preferenceService,
+       _log = Logger('BillsBackgroundServiceLocal');
 
   final BillsPreferenceService _preferenceService;
+  final Logger _log;
 
   static final dailyNotificationUniqueName = 'daily-notification';
   static final dailyNotificationTaskName = 'Daily Notification';
@@ -60,7 +62,7 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
         backoffPolicy: BackoffPolicy.linear,
       );
     } else {
-      debugPrint(
+      _log.fine(
         'Background service: Daily notification is disabled, cancelling task.',
       );
 
@@ -72,25 +74,29 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
 @pragma('vm:entry-point')
 void backgroundEntrypoint() {
   BillsBackgroundServiceLocal._workManager.executeTask((task, inputData) async {
+    final log = Logger('BillsBackgroundServiceLocal.backgroundEntrypoint');
+
     try {
+      log.info('Background service: task "$task" started.');
+
       if (task == BillsBackgroundServiceLocal.dailyNotificationTaskName ||
           task == BillsBackgroundServiceLocal.oneTimeNotificationTaskName) {
-        await backgroundDailyReminder();
+        await backgroundDailyReminder(log);
       }
 
-      debugPrint('Background service: success on task "$task".');
+      log.fine('Background service: success on task "$task".');
 
       // For everything else, just mark the background task as complete.
       return Future.value(true);
     } catch (err) {
-      debugPrint('Background service: error ($err).');
+      log.severe('Background service: error ($err).');
 
       throw Exception(err);
     }
   });
 }
 
-Future<void> backgroundDailyReminder() async {
+Future<void> backgroundDailyReminder(Logger log) async {
   // await BillsNotificationServiceLocal.initializeTimezone();
   // await BillsNotificationServiceLocal.initializeNotificationPermissions();
   await BillsNotificationServiceLocal.initializeNotification();
@@ -106,14 +112,12 @@ Future<void> backgroundDailyReminder() async {
       .toList();
 
   if (relevantBills.isEmpty) {
-    debugPrint('Background service: no relevant bills found for notification.');
+    log.fine('Background service: no relevant bills found for notification.');
     return;
   }
 
   for (final bill in relevantBills) {
-    debugPrint(
-      'Background service: notification for ${bill.name} (${bill.id}).',
-    );
+    log.fine('Background service: notification for ${bill.name} (${bill.id}).');
     await notification.show(bill);
   }
 }
