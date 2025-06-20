@@ -25,6 +25,13 @@ class _NotificationsSettingsScreenState
   }
 
   @override
+  void dispose() {
+    super.dispose();
+
+    _viewModel.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Notification Settings')),
