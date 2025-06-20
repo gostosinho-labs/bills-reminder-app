@@ -1,21 +1,20 @@
-import 'package:bills_reminder/data/services/background/bills_background_service.dart';
-import 'package:bills_reminder/data/services/bills_notification/bills_notification_service.dart';
+import 'dart:isolate';
+
+import 'package:bills_reminder/data/services/background/bills_background_service_local.dart';
+import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
+import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
 import 'package:bills_reminder/data/services/preference/bills_preference_bool.dart';
 import 'package:bills_reminder/data/services/preference/bills_preference_service.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bills_reminder/data/services/preference/bills_preference_service_local.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 
 class NotificationsSettingsViewModel extends ChangeNotifier {
   NotificationsSettingsViewModel({
-    required BillsBackgroundService backgroundService,
-    required BillsNotificationService notificationService,
     required BillsPreferenceService preferenceService,
-  }) : _backgroundService = backgroundService,
-       _notificationService = notificationService,
-       _preferenceService = preferenceService;
+  }) : _preferenceService = preferenceService;
 
-  final BillsBackgroundService _backgroundService;
-  final BillsNotificationService _notificationService;
   final BillsPreferenceService _preferenceService;
   final _log = Logger('NotificationsSettingsViewModel');
 
@@ -64,9 +63,8 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
 
     try {
       await _preferenceService.setBool(BillsPreferenceBool.startup, value);
-      _enableStartupNotification = value;
-      await _backgroundService.registerDailyNotification();
 
+      _enableStartupNotification = value;
       notifyListeners();
     } catch (e) {
       _error = e;
@@ -76,15 +74,38 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
 
   Future<void> setPerBillNotification(bool value) async {
     _log.fine('Setting per bill notification to $value');
+
     try {
       await _preferenceService.setBool(BillsPreferenceBool.perBill, value);
+
       _enablePerBillNotification = value;
-
-      if (value) {
-        await _notificationService.cancelAll();
-      }
-
       notifyListeners();
+
+      await Isolate.spawn((message) async {
+        BackgroundIsolateBinaryMessenger.ensureInitialized(message.token);
+
+        await BillsNotificationServiceLocal.initializeTimezone();
+
+        final service = BillsServiceDatabase();
+        final notification = BillsNotificationServiceLocal();
+        final log = Logger(
+          'NotificationsSettingsViewModel.setPerBillNotification',
+        );
+
+        if (message.enabled) {
+          final now = DateTime.now();
+          final bills = await service.getBills();
+
+          for (final bill in bills) {
+            if (bill.date.isAfter(now)) {
+              log.fine('Scheduling notification for bill: ${bill.name}');
+              await notification.schedule(bill);
+            }
+          }
+        } else {
+          await notification.cancelAll();
+        }
+      }, (enabled: value, token: RootIsolateToken.instance!));
     } catch (e) {
       _error = e;
       _log.severe('Error setting per bill notification', e);
@@ -93,15 +114,25 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
 
   Future<void> setDailyNotification(bool value) async {
     _log.fine('Setting daily notification to $value');
+
     try {
       await _preferenceService.setBool(BillsPreferenceBool.daily, value);
+
       _enableDailyNotification = value;
-
-      if (value) {
-        await _backgroundService.registerDailyNotification();
-      }
-
       notifyListeners();
+
+      await Isolate.spawn((message) async {
+        BackgroundIsolateBinaryMessenger.ensureInitialized(message.token);
+
+        await BillsBackgroundServiceLocal.initialize();
+
+        final preferenceService = BillsPreferenceServiceLocal();
+        final backgroundService = BillsBackgroundServiceLocal(
+          preferenceService: preferenceService,
+        );
+
+        await backgroundService.registerDailyNotification();
+      }, (token: RootIsolateToken.instance!));
     } catch (e) {
       _error = e;
       _log.severe('Error setting daily notification', e);

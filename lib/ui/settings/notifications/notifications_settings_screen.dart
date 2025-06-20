@@ -18,8 +18,6 @@ class _NotificationsSettingsScreenState
   void initState() {
     super.initState();
     _viewModel = NotificationsSettingsViewModel(
-      backgroundService: context.read(),
-      notificationService: context.read(),
       preferenceService: context.read(),
     );
 
