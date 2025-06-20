@@ -1,13 +1,11 @@
-import 'dart:isolate';
-
 import 'package:bills_reminder/data/services/background/bills_background_service_local.dart';
 import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
 import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
 import 'package:bills_reminder/data/services/preference/bills_preference_bool.dart';
 import 'package:bills_reminder/data/services/preference/bills_preference_service.dart';
 import 'package:bills_reminder/data/services/preference/bills_preference_service_local.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 
 class NotificationsSettingsViewModel extends ChangeNotifier {
@@ -65,10 +63,14 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
       await _preferenceService.setBool(BillsPreferenceBool.startup, value);
 
       _enableStartupNotification = value;
-      notifyListeners();
+      _error = null;
+
+      _log.fine('Startup notification set to $value');
     } catch (e) {
       _error = e;
       _log.severe('Error setting startup notification', e);
+    } finally {
+      notifyListeners();
     }
   }
 
@@ -79,9 +81,8 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
       await _preferenceService.setBool(BillsPreferenceBool.perBill, value);
 
       _enablePerBillNotification = value;
-      notifyListeners();
 
-      await Isolate.spawn((message) async {
+      await compute((message) async {
         BackgroundIsolateBinaryMessenger.ensureInitialized(message.token);
 
         await BillsNotificationServiceLocal.initializeTimezone();
@@ -106,9 +107,14 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
           await notification.cancelAll();
         }
       }, (enabled: value, token: RootIsolateToken.instance!));
+
+      _error = null;
+      _log.fine('Per bill notification set to $value');
     } catch (e) {
       _error = e;
       _log.severe('Error setting per bill notification', e);
+    } finally {
+      notifyListeners();
     }
   }
 
@@ -119,9 +125,8 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
       await _preferenceService.setBool(BillsPreferenceBool.daily, value);
 
       _enableDailyNotification = value;
-      notifyListeners();
 
-      await Isolate.spawn((message) async {
+      await compute((message) async {
         BackgroundIsolateBinaryMessenger.ensureInitialized(message.token);
 
         await BillsBackgroundServiceLocal.initialize();
@@ -133,9 +138,14 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
 
         await backgroundService.registerDailyNotification();
       }, (token: RootIsolateToken.instance!));
+
+      _error = null;
+      _log.fine('Daily notification set to $value');
     } catch (e) {
       _error = e;
       _log.severe('Error setting daily notification', e);
+    } finally {
+      notifyListeners();
     }
   }
 }
