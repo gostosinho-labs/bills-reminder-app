@@ -18,8 +18,8 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
 
   static final dailyNotificationUniqueName = 'daily-notification';
   static final dailyNotificationTaskName = 'Daily Notification';
-  static final oneTimeNotificationUniqueName = 'one-time-notification';
-  static final oneTimeNotificationTaskName = 'One Time Notification';
+  static final startupNotificationUniqueName = 'startup-notification';
+  static final startupNotificationTaskName = 'Startup Notification';
 
   static final _workManager = Workmanager();
 
@@ -28,22 +28,24 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
   }
 
   @override
-  Future<void> registerDailyNotification() async {
+  Future<void> registerStartupNotification() async {
     final startupNotification = await _preferenceService.isBool(
       BillsPreferenceBool.startup,
     );
-    final dailyNotification = await _preferenceService.isBool(
-      BillsPreferenceBool.daily,
-    );
-
-    _workManager.cancelAll();
 
     if (startupNotification) {
       _workManager.registerOneOffTask(
-        BillsBackgroundServiceLocal.oneTimeNotificationUniqueName,
-        BillsBackgroundServiceLocal.oneTimeNotificationTaskName,
+        BillsBackgroundServiceLocal.startupNotificationUniqueName,
+        BillsBackgroundServiceLocal.startupNotificationTaskName,
       );
     }
+  }
+
+  @override
+  Future<void> registerDailyNotification() async {
+    final dailyNotification = await _preferenceService.isBool(
+      BillsPreferenceBool.daily,
+    );
 
     if (dailyNotification) {
       final now = DateTime.now();
@@ -80,7 +82,7 @@ void backgroundEntrypoint() {
       log.info('Background service: task "$task" started.');
 
       if (task == BillsBackgroundServiceLocal.dailyNotificationTaskName ||
-          task == BillsBackgroundServiceLocal.oneTimeNotificationTaskName) {
+          task == BillsBackgroundServiceLocal.startupNotificationTaskName) {
         await backgroundDailyReminder(log);
       }
 
@@ -97,8 +99,6 @@ void backgroundEntrypoint() {
 }
 
 Future<void> backgroundDailyReminder(Logger log) async {
-  // await BillsNotificationServiceLocal.initializeTimezone();
-  // await BillsNotificationServiceLocal.initializeNotificationPermissions();
   await BillsNotificationServiceLocal.initializeNotification();
 
   final database = BillsServiceDatabase();
