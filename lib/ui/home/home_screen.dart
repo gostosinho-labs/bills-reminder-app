@@ -4,6 +4,7 @@ import 'package:bills_reminder/domain/models/bill.dart';
 import 'package:bills_reminder/routing/routes.dart';
 import 'package:bills_reminder/ui/core/bills/bill_list_view.dart';
 import 'package:bills_reminder/ui/home/home_view_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -67,11 +68,12 @@ class _HomeScreenState extends State<HomeScreen>
                 child: const Text('Delete All Bills'),
                 onPressed: () => _onDeleteAll(context),
               ),
-              MenuItemButton(
-                leadingIcon: const Icon(Icons.bug_report_outlined),
-                child: const Text('Create Sample Bills'),
-                onPressed: () => _onCreateSampleBills(context),
-              ),
+              if (kDebugMode)
+                MenuItemButton(
+                  leadingIcon: const Icon(Icons.bug_report_outlined),
+                  child: const Text('Create Sample Bills'),
+                  onPressed: () => _onCreateSampleBills(context),
+                ),
             ],
             builder: (context, controller, child) {
               return IconButton(
