@@ -55,4 +55,23 @@ class HomeViewModel extends ChangeNotifier {
 
     _log.fine('Deleted all bills');
   }
+
+  Future<void> createSampleBills() async {
+    final now = DateTime.now();
+    final day = now.day;
+
+    for (var i = 1; i <= day - 1; i++) {
+      final bill = Bill(
+        id: 0,
+        name: 'Conta $i',
+        value: 100.0 + (i / 100),
+        date: DateTime(now.year, now.month + 1, i),
+        paid: false,
+        notification: true,
+        recurrence: true,
+      );
+
+      await _repository.addBill(bill);
+    }
+  }
 }

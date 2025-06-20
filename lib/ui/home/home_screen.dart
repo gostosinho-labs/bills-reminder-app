@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen>
           MenuAnchor(
             menuChildren: [
               MenuItemButton(
-                leadingIcon: const Icon(Icons.notifications),
+                leadingIcon: const Icon(Icons.notifications_outlined),
                 child: const Text('Notification Settings'),
                 onPressed: () => _onNotificationSettings(context),
               ),
@@ -66,6 +66,11 @@ class _HomeScreenState extends State<HomeScreen>
                 leadingIcon: const Icon(Icons.delete_outline),
                 child: const Text('Delete All Bills'),
                 onPressed: () => _onDeleteAll(context),
+              ),
+              MenuItemButton(
+                leadingIcon: const Icon(Icons.bug_report_outlined),
+                child: const Text('Create Sample Bills'),
+                onPressed: () => _onCreateSampleBills(context),
               ),
             ],
             builder: (context, controller, child) {
@@ -175,5 +180,10 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<void> _onNotificationSettings(BuildContext context) async {
     context.push(Routes.settingsNotifications);
+  }
+
+  Future<void> _onCreateSampleBills(BuildContext context) async {
+    await _viewModel.createSampleBills();
+    await _viewModel.getBills();
   }
 }
