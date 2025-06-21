@@ -82,7 +82,8 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
 
       _enablePerBillNotification = value;
 
-      await compute((message) async {
+      // Not awaited since the result isn't important.
+      compute((message) async {
         BackgroundIsolateBinaryMessenger.ensureInitialized(message.token);
 
         await BillsNotificationServiceLocal.initializeTimezone();
@@ -126,7 +127,8 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
 
       _enableDailyNotification = value;
 
-      await compute((message) async {
+      // Not awaited since the result isn't important.
+      compute((message) async {
         BackgroundIsolateBinaryMessenger.ensureInitialized(message.token);
 
         await BillsBackgroundServiceLocal.initialize();
