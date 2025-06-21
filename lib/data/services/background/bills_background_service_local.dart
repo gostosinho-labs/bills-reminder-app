@@ -55,7 +55,7 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
           : today9am.add(const Duration(days: 1));
       final initialDelay = next9am.difference(now);
 
-      _workManager.registerPeriodicTask(
+      await _workManager.registerPeriodicTask(
         dailyNotificationUniqueName,
         dailyNotificationTaskName,
         frequency: const Duration(hours: 1),
@@ -68,7 +68,7 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
         'Background service: Daily notification is disabled, cancelling task.',
       );
 
-      _workManager.cancelByUniqueName(dailyNotificationUniqueName);
+      await _workManager.cancelByUniqueName(dailyNotificationUniqueName);
     }
   }
 }
