@@ -1,19 +1,18 @@
-import 'package:bills_reminder/data/services/background/bills_background_service_local.dart';
-import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
-import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
-import 'package:bills_reminder/data/services/preference/bills_preference_bool.dart';
-import 'package:bills_reminder/data/services/preference/bills_preference_service.dart';
-import 'package:bills_reminder/data/services/preference/bills_preference_service_local.dart';
+import 'package:bills_reminder/data/services/background/background_service_local.dart';
+import 'package:bills_reminder/data/services/database/bills_service_database.dart';
+import 'package:bills_reminder/data/services/notification/notification_service_local.dart';
+import 'package:bills_reminder/data/services/preference/preference_bool.dart';
+import 'package:bills_reminder/data/services/preference/preference_service.dart';
+import 'package:bills_reminder/data/services/preference/preference_service_local.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
 class NotificationsSettingsViewModel extends ChangeNotifier {
-  NotificationsSettingsViewModel({
-    required BillsPreferenceService preferenceService,
-  }) : _preferenceService = preferenceService;
+  NotificationsSettingsViewModel({required PreferenceService preferenceService})
+    : _preferenceService = preferenceService;
 
-  final BillsPreferenceService _preferenceService;
+  final PreferenceService _preferenceService;
   final _log = Logger('NotificationsSettingsViewModel');
 
   bool _isLoading = true;
@@ -37,13 +36,13 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
 
     try {
       _enableStartupNotification = await _preferenceService.isBool(
-        BillsPreferenceBool.startup,
+        PreferenceBool.startup,
       );
       _enablePerBillNotification = await _preferenceService.isBool(
-        BillsPreferenceBool.perBill,
+        PreferenceBool.perBill,
       );
       _enableDailyNotification = await _preferenceService.isBool(
-        BillsPreferenceBool.daily,
+        PreferenceBool.daily,
       );
 
       _log.fine('Notification settings loaded');
@@ -60,7 +59,7 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
     _log.fine('Setting startup notification to $value');
 
     try {
-      await _preferenceService.setBool(BillsPreferenceBool.startup, value);
+      await _preferenceService.setBool(PreferenceBool.startup, value);
 
       _enableStartupNotification = value;
       _error = null;
@@ -78,7 +77,7 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
     _log.fine('Setting per bill notification to $value');
 
     try {
-      await _preferenceService.setBool(BillsPreferenceBool.perBill, value);
+      await _preferenceService.setBool(PreferenceBool.perBill, value);
 
       _enablePerBillNotification = value;
 
@@ -86,10 +85,10 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
       compute((message) async {
         BackgroundIsolateBinaryMessenger.ensureInitialized(message.token);
 
-        await BillsNotificationServiceLocal.initializeTimezone();
+        await NotificationServiceLocal.initializeTimezone();
 
         final service = BillsServiceDatabase();
-        final notification = BillsNotificationServiceLocal();
+        final notification = NotificationServiceLocal();
         final log = Logger(
           'NotificationsSettingsViewModel.setPerBillNotification',
         );
@@ -123,7 +122,7 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
     _log.fine('Setting daily notification to $value');
 
     try {
-      await _preferenceService.setBool(BillsPreferenceBool.daily, value);
+      await _preferenceService.setBool(PreferenceBool.daily, value);
 
       _enableDailyNotification = value;
 
@@ -131,10 +130,10 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
       compute((message) async {
         BackgroundIsolateBinaryMessenger.ensureInitialized(message.token);
 
-        await BillsBackgroundServiceLocal.initialize();
+        await BackgroundServiceLocal.initialize();
 
-        final preferenceService = BillsPreferenceServiceLocal();
-        final backgroundService = BillsBackgroundServiceLocal(
+        final preferenceService = PreferenceServiceLocal();
+        final backgroundService = BackgroundServiceLocal(
           preferenceService: preferenceService,
         );
 

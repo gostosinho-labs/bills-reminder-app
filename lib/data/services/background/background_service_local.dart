@@ -1,19 +1,18 @@
-import 'package:bills_reminder/data/services/bills/bills_service_database.dart';
-import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
-import 'package:bills_reminder/data/services/preference/bills_preference_bool.dart';
-import 'package:bills_reminder/data/services/preference/bills_preference_service.dart';
+import 'package:bills_reminder/data/services/database/bills_service_database.dart';
+import 'package:bills_reminder/data/services/notification/notification_service_local.dart';
+import 'package:bills_reminder/data/services/preference/preference_bool.dart';
+import 'package:bills_reminder/data/services/preference/preference_service.dart';
 import 'package:logging/logging.dart';
 import 'package:workmanager/workmanager.dart';
 
-import 'bills_background_service.dart';
+import 'background_service.dart';
 
-class BillsBackgroundServiceLocal implements BillsBackgroundService {
-  BillsBackgroundServiceLocal({
-    required BillsPreferenceService preferenceService,
-  }) : _preferenceService = preferenceService,
-       _log = Logger('BillsBackgroundServiceLocal');
+class BackgroundServiceLocal implements BackgroundService {
+  BackgroundServiceLocal({required PreferenceService preferenceService})
+    : _preferenceService = preferenceService,
+      _log = Logger('BillsBackgroundServiceLocal');
 
-  final BillsPreferenceService _preferenceService;
+  final PreferenceService _preferenceService;
   final Logger _log;
 
   static final dailyNotificationUniqueName = 'daily-notification';
@@ -30,13 +29,13 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
   @override
   Future<void> registerStartupNotification() async {
     final startupNotification = await _preferenceService.isBool(
-      BillsPreferenceBool.startup,
+      PreferenceBool.startup,
     );
 
     if (startupNotification) {
       _workManager.registerOneOffTask(
-        BillsBackgroundServiceLocal.startupNotificationUniqueName,
-        BillsBackgroundServiceLocal.startupNotificationTaskName,
+        BackgroundServiceLocal.startupNotificationUniqueName,
+        BackgroundServiceLocal.startupNotificationTaskName,
       );
     }
   }
@@ -44,7 +43,7 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
   @override
   Future<void> registerDailyNotification() async {
     final dailyNotification = await _preferenceService.isBool(
-      BillsPreferenceBool.daily,
+      PreferenceBool.daily,
     );
 
     if (dailyNotification) {
@@ -75,14 +74,14 @@ class BillsBackgroundServiceLocal implements BillsBackgroundService {
 
 @pragma('vm:entry-point')
 void backgroundEntrypoint() {
-  BillsBackgroundServiceLocal._workManager.executeTask((task, inputData) async {
+  BackgroundServiceLocal._workManager.executeTask((task, inputData) async {
     final log = Logger('BillsBackgroundServiceLocal.backgroundEntrypoint');
 
     try {
       log.info('Background service: task "$task" started.');
 
-      if (task == BillsBackgroundServiceLocal.dailyNotificationTaskName ||
-          task == BillsBackgroundServiceLocal.startupNotificationTaskName) {
+      if (task == BackgroundServiceLocal.dailyNotificationTaskName ||
+          task == BackgroundServiceLocal.startupNotificationTaskName) {
         await backgroundDailyReminder(log);
       }
 
@@ -99,10 +98,10 @@ void backgroundEntrypoint() {
 }
 
 Future<void> backgroundDailyReminder(Logger log) async {
-  await BillsNotificationServiceLocal.initializeNotification();
+  await NotificationServiceLocal.initializeNotification();
 
   final database = BillsServiceDatabase();
-  final notification = BillsNotificationServiceLocal();
+  final notification = NotificationServiceLocal();
 
   final now = DateTime.now();
   final bills = await database.getBills();

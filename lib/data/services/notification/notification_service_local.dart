@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:bills_reminder/data/services/bills_notification/bills_notification_service.dart';
+import 'package:bills_reminder/data/services/notification/notification_service.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-class BillsNotificationServiceLocal implements BillsNotificationService {
+class NotificationServiceLocal implements NotificationService {
   static final _notification = FlutterLocalNotificationsPlugin();
 
   static Future<void> initializeTimezone() async {

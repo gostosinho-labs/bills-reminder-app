@@ -1,7 +1,7 @@
 import 'dart:collection';
 
-import 'package:bills_reminder/data/services/bills/bills_service.dart';
-import 'package:bills_reminder/data/services/bills_notification/bills_notification_service.dart';
+import 'package:bills_reminder/data/services/database/bills_service.dart';
+import 'package:bills_reminder/data/services/notification/notification_service.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
 
 import 'bills_repository.dart';
@@ -9,12 +9,12 @@ import 'bills_repository.dart';
 class BillsRepositoryLocal implements BillsRepository {
   BillsRepositoryLocal({
     required BillsService billsService,
-    required BillsNotificationService billsNotificationService,
+    required NotificationService billsNotificationService,
   }) : _billsService = billsService,
        _billsNotificationService = billsNotificationService;
 
   final BillsService _billsService;
-  final BillsNotificationService _billsNotificationService;
+  final NotificationService _billsNotificationService;
 
   @override
   Future<UnmodifiableListView<Bill>> getBills() async {

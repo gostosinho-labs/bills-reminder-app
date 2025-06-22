@@ -1,4 +1,4 @@
-import 'package:bills_reminder/data/services/background/bills_background_service_local.dart';
+import 'package:bills_reminder/data/services/background/background_service_local.dart';
 import 'package:flutter/material.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -22,7 +22,7 @@ class _DebugBackgroundWorkState extends State<DebugBackgroundWork> {
 
     _tasks = [
       (
-        id: BillsBackgroundServiceLocal.dailyNotificationUniqueName,
+        id: BackgroundServiceLocal.dailyNotificationUniqueName,
         description: 'Daily notification background task',
         enabled: false,
       ),

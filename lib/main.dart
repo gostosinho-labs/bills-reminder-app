@@ -1,6 +1,6 @@
-import 'package:bills_reminder/data/services/background/bills_background_service.dart';
-import 'package:bills_reminder/data/services/background/bills_background_service_local.dart';
-import 'package:bills_reminder/data/services/bills_notification/bills_notification_service_local.dart';
+import 'package:bills_reminder/data/services/background/background_service.dart';
+import 'package:bills_reminder/data/services/background/background_service_local.dart';
+import 'package:bills_reminder/data/services/notification/notification_service_local.dart';
 import 'package:bills_reminder/dependencies/local_providers.dart';
 import 'package:bills_reminder/routing/router.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +9,10 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await BillsNotificationServiceLocal.initializeTimezone();
-  await BillsNotificationServiceLocal.initializeNotification();
-  await BillsNotificationServiceLocal.initializeNotificationPermissions();
-  await BillsBackgroundServiceLocal.initialize();
+  await NotificationServiceLocal.initializeTimezone();
+  await NotificationServiceLocal.initializeNotification();
+  await NotificationServiceLocal.initializeNotificationPermissions();
+  await BackgroundServiceLocal.initialize();
 
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((rec) {
@@ -51,7 +51,7 @@ class MainApp extends StatelessWidget {
         ),
       ),
       builder: (context, child) {
-        final backgroundService = context.read<BillsBackgroundService>();
+        final backgroundService = context.read<BackgroundService>();
 
         backgroundService.registerStartupNotification();
         backgroundService.registerDailyNotification();

@@ -1,4 +1,4 @@
-enum BillsPreferenceBool {
+enum PreferenceBool {
   startup('startup', true),
   perBill('per_bill', true),
   daily('daily', true);
@@ -6,5 +6,5 @@ enum BillsPreferenceBool {
   final String key;
   final bool defaultValue;
 
-  const BillsPreferenceBool(this.key, this.defaultValue);
+  const PreferenceBool(this.key, this.defaultValue);
 }

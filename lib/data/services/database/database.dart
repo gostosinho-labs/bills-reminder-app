@@ -1,18 +1,24 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
-class BillsDatabase {
+class DatabaseAccessor {
   static const _databaseName = 'bills_database.db';
   static const _databaseVersion = 1;
 
-  BillsDatabase._privateConstructor();
+  DatabaseAccessor._privateConstructor();
 
-  static final BillsDatabase instance = BillsDatabase._privateConstructor();
+  static final DatabaseAccessor instance =
+      DatabaseAccessor._privateConstructor();
+
   static Database? _database;
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
+    if (_database != null) {
+      return _database!;
+    }
+
     _database = await _initializeDB();
+
     return _database!;
   }
 
