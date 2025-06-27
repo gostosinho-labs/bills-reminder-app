@@ -2,6 +2,7 @@ import 'package:bills_reminder/data/services/database/bills_service_database.dar
 import 'package:bills_reminder/data/services/notification/notification_service_local.dart';
 import 'package:bills_reminder/data/services/preference/preference_bool.dart';
 import 'package:bills_reminder/data/services/preference/preference_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -23,7 +24,10 @@ class BackgroundServiceLocal implements BackgroundService {
   static final _workManager = Workmanager();
 
   static Future<void> initialize() async {
-    await _workManager.initialize(backgroundEntrypoint, isInDebugMode: true);
+    await _workManager.initialize(
+      backgroundEntrypoint,
+      isInDebugMode: kDebugMode,
+    );
   }
 
   @override
