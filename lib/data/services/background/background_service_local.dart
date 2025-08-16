@@ -4,6 +4,7 @@ import 'package:bills_reminder/data/services/preference/preference_bool.dart';
 import 'package:bills_reminder/data/services/preference/preference_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'background_service.dart';
@@ -84,8 +85,14 @@ void backgroundEntrypoint() {
     try {
       log.info('Background service: task "$task" started.');
 
+      if (task == Workmanager.iOSBackgroundTask) {
+        log.info('Background service: iOS background task started.');
+      }
+
       if (task == BackgroundServiceLocal.dailyNotificationTaskName ||
-          task == BackgroundServiceLocal.startupNotificationTaskName) {
+          task == BackgroundServiceLocal.dailyNotificationUniqueName ||
+          task == BackgroundServiceLocal.startupNotificationTaskName ||
+          task == BackgroundServiceLocal.startupNotificationUniqueName) {
         await backgroundDailyReminder(log);
       }
 
@@ -102,6 +109,8 @@ void backgroundEntrypoint() {
 }
 
 Future<void> backgroundDailyReminder(Logger log) async {
+  SqflitePlugin.registerWith();
+
   await NotificationServiceLocal.initializeNotification();
 
   final database = BillsServiceDatabase();
