@@ -1,5 +1,6 @@
 import 'package:bills_reminder/domain/models/bill.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widget_previews.dart';
 import 'package:intl/intl.dart';
 
 class BillListItem extends StatelessWidget {
@@ -75,4 +76,26 @@ class BillListItem extends StatelessWidget {
       ),
     );
   }
+}
+
+@Preview(size: Size(300, 60))
+Widget sampleListItem() {
+  return MaterialApp(
+    home: Scaffold(
+      body: Center(
+        child: BillListItem(
+          bill: Bill(
+            id: 1,
+            name: 'Test Bill',
+            date: DateTime.now(),
+            value: 100,
+            paid: false,
+            notification: true,
+            recurrence: true,
+          ),
+          onTap: () {},
+        ),
+      ),
+    ),
+  );
 }
