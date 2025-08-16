@@ -58,14 +58,30 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<void> createSampleBills() async {
     final now = DateTime.now();
-    final day = now.day;
+    final sampleNames = [
+      'Electricity Bill',
+      'Water Bill',
+      'Internet Subscription',
+      'Mobile Phone',
+      'Car Rental',
+      'Groceries',
+      'Health Insurance',
+      'Gym Membership',
+      'Streaming Service',
+      'Credit Card Payment',
+      'Mortgage',
+      'School Fees',
+      'Fuel',
+      'Property Tax',
+      'Home Security',
+    ];
 
-    for (var i = 1; i <= day - 1; i++) {
+    for (var i = 0; i < sampleNames.length; i++) {
       final bill = Bill(
         id: 0,
-        name: 'Conta $i',
-        value: 100.0 + (i / 100),
-        date: DateTime(now.year, now.month + 1, i),
+        name: sampleNames[i],
+        value: 50.0 + (i * 25),
+        date: DateTime(now.year, now.month, (i * 2 % 28) + 1),
         paid: false,
         notification: true,
         recurrence: true,
