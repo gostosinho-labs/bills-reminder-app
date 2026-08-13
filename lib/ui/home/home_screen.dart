@@ -102,7 +102,10 @@ class _HomeScreenState extends State<HomeScreen>
         children: [
           FloatingActionButton(
             heroTag: 'calendar',
-            onPressed: () => context.push(Routes.calendar),
+            onPressed: () async {
+              await context.push(Routes.calendar);
+              await _viewModel.getBills();
+            },
             child: const Icon(Icons.calendar_month),
           ),
           const SizedBox(height: 16),
