@@ -55,6 +55,12 @@ class BillListItem extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
+                      isPaid ? Icons.check_circle : Icons.circle_outlined,
+                      size: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(
                       bill.notification
                           ? Icons.notifications_active
                           : Icons.notifications_off,
