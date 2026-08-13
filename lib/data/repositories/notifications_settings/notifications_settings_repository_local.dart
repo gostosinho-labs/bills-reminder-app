@@ -13,11 +13,12 @@ import 'notifications_settings_repository.dart';
 /// Local implementation of [NotificationsSettingsRepository].
 ///
 /// Enabling/disabling the per-bill and daily preferences kicks off
-/// unawaited background isolate work (via [compute]) to (re)schedule
-/// notifications or WorkManager tasks. That isolate work has no widget
-/// tree to read providers from, so it instantiates concrete service
-/// classes directly, matching the convention used by background isolate
-/// entrypoints elsewhere in the data layer (see `background_service_local.dart`).
+/// background isolate work (via [compute]) to (re)schedule notifications or
+/// WorkManager tasks. That isolate work has no widget tree to read providers
+/// from, so it instantiates concrete service classes directly, matching the
+/// convention used by background isolate entrypoints elsewhere in the data
+/// layer (see `background_service_local.dart`). The work is awaited so
+/// failures propagate back to the caller instead of being silently dropped.
 class NotificationsSettingsRepositoryLocal
     implements NotificationsSettingsRepository {
   NotificationsSettingsRepositoryLocal({
@@ -51,8 +52,7 @@ class NotificationsSettingsRepositoryLocal
 
     await _preferenceService.setBool(PreferenceBool.perBill, value);
 
-    // Not awaited since the result isn't important.
-    compute(_schedulePerBillNotifications, (
+    await compute(_schedulePerBillNotifications, (
       enabled: value,
       token: RootIsolateToken.instance!,
     ));
@@ -69,8 +69,9 @@ class NotificationsSettingsRepositoryLocal
 
     await _preferenceService.setBool(PreferenceBool.daily, value);
 
-    // Not awaited since the result isn't important.
-    compute(_registerDailyNotification, (token: RootIsolateToken.instance!));
+    await compute(_registerDailyNotification, (
+      token: RootIsolateToken.instance!,
+    ));
   }
 }
 

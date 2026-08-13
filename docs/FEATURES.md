@@ -120,9 +120,10 @@ for opening or inspecting system notification settings.
 - A bill with notification enabled can receive one scheduled notification at
    08:00 on its due date.
 - Creating or updating a bill schedules it only when its stored date is after
-   the current timestamp.
+   the current timestamp and the global **Per Bill** preference is enabled.
 - Updating a bill cancels its scheduled notification when its notification
-   setting is off or its date is not in the future.
+   setting is off, its date is not in the future, or the global **Per Bill**
+   preference is disabled.
 - Deleting a bill cancels its scheduled notification.
 - Deleting all bills cancels all local notifications.
 - A recurring copy is passed through normal bill creation, so it can receive a
@@ -153,16 +154,16 @@ enabled.
 - **On Startup**: Saves whether startup work is registered on a later app
    construction. Changing the switch does not immediately register or cancel a
    startup task.
-- **Per Bill**: Saves a global preference and starts unawaited background work.
-   Enabling it schedules every future bill, including bills whose own
-   notification setting is off. Disabling it cancels all local notifications.
-- **Daily Notification**: Saves the preference and starts unawaited background
-   work to register or cancel the periodic task.
+- **Per Bill**: Saves a global preference and awaits background work before
+   the switch reflects the change. Enabling it schedules every future bill,
+   including bills whose own notification setting is off. Disabling it
+   cancels all local notifications. Once disabled, normal bill creation and
+   editing also stop scheduling notifications until it is re-enabled.
+- **Daily Notification**: Saves the preference and awaits background work to
+   register or cancel the periodic task.
 
-Known limitation: normal bill creation and editing do not read the global
-**Per Bill** preference. A bill can therefore schedule a notification after
-the global preference is disabled. Errors from the unawaited settings work are
-not reported back to the settings screen.
+Errors from this background work are caught and reported back to the
+settings screen like any other view-model error.
 
 ### 5. Data Management
 

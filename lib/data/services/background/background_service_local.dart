@@ -95,7 +95,7 @@ void backgroundEntrypoint() {
       log.fine('Background service: success on task "$task".');
 
       // For everything else, just mark the background task as complete.
-      return Future.value(true);
+      return true;
     } catch (err) {
       log.severe('Background service: error ($err).');
 

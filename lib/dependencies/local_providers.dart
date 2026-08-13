@@ -32,6 +32,7 @@ List<SingleChildWidget> localProviders() {
         return BillsRepositoryLocal(
               billsService: context.read(),
               billsNotificationService: context.read(),
+              preferenceService: context.read(),
             )
             as BillsRepository;
       },
