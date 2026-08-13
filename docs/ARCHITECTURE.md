@@ -191,7 +191,7 @@ push notifications; all notifications are local.
 
 ## Linting
 
-`analysis_options.yaml` includes only `package:flutter_lints/flutter.yaml`
-(via `flutter_lints ^6.0.0`) — no custom rules or exclusions. Do not add
-custom lint suppressions without a good reason; fix the underlying issue
-instead.
+`analysis_options.yaml` includes `package:flutter_lints/flutter.yaml` (via
+`flutter_lints ^6.0.0`) and excludes generated build and platform directories.
+Do not add custom lint suppressions without a good reason; fix the underlying
+issue instead.

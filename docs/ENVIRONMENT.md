@@ -2,10 +2,10 @@
 
 ## Requirements
 
-- Flutter SDK compatible with Dart `^3.8.1` (see `environment.sdk` in
-  `pubspec.yaml`). Use the `stable` channel (matches CI, see
+- Flutter `3.47.0` on the `stable` channel (matches CI, see
   `.github/workflows/build-and-publish.yml`).
-- Dart SDK (bundled with Flutter).
+- Dart `3.13.0` (bundled with Flutter; see `environment.sdk` in
+  `pubspec.yaml`).
 - Android Studio or VS Code with the Flutter/Dart extensions, for editing
   and running on emulators/devices.
 - Xcode, if building/running for iOS.

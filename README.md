@@ -41,7 +41,7 @@ Notification settings:
 
 ### Prerequisites
 
-- Stable Flutter SDK with Dart 3.8.1 or a later Dart 3 release
+- Flutter 3.47.0 stable with Dart 3.13.0
 - An Android or iOS development environment
 
 ### Run the App
