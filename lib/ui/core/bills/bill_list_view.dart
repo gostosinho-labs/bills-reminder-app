@@ -15,8 +15,6 @@ class BillListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('MMMM/yyyy');
 
-    String? currentMonthYear;
-
     return ListView.separated(
       // The bottom padding is needed or the floating action buttons would cover the last items.
       padding: const EdgeInsets.only(bottom: 192),
@@ -26,11 +24,10 @@ class BillListView extends StatelessWidget {
         final bill = bills[index];
         final monthYear = dateFormat.format(bill.date).toUpperCase();
 
-        final bool showMonthYear = currentMonthYear != monthYear;
-
-        if (showMonthYear) {
-          currentMonthYear = monthYear;
-        }
+        final previousMonthYear = index == 0
+            ? null
+            : dateFormat.format(bills[index - 1].date).toUpperCase();
+        final bool showMonthYear = previousMonthYear != monthYear;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
