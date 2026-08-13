@@ -27,39 +27,36 @@ class _BillsEditScreenState extends State<BillsEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: _viewModel,
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Edit Bill')),
-        body: ListenableBuilder(
-          listenable: _viewModel,
-          builder: (context, _) {
-            if (_viewModel.error != null) {
-              return Center(child: Text('Error: ${_viewModel.error}'));
-            }
+    return Scaffold(
+      appBar: AppBar(title: const Text('Edit Bill')),
+      body: ListenableBuilder(
+        listenable: _viewModel,
+        builder: (context, _) {
+          if (_viewModel.error != null) {
+            return Center(child: Text('Error: ${_viewModel.error}'));
+          }
 
-            return _viewModel.bill == null
-                ? const Center(child: Text('Bill not found'))
-                : BillsForm(
-                  bill: _viewModel.bill,
-                  isEdit: true,
-                  onSave: (Bill bill) async {
-                    await _viewModel.updateBill(bill);
+          return _viewModel.bill == null
+              ? const Center(child: Text('Bill not found'))
+              : BillsForm(
+                bill: _viewModel.bill,
+                isEdit: true,
+                onSave: (Bill bill) async {
+                  await _viewModel.updateBill(bill);
 
-                    if (context.mounted) {
-                      context.pop();
-                    }
-                  },
-                  onDelete: (Bill bill) async {
-                    await _viewModel.deleteBill(bill);
+                  if (context.mounted) {
+                    context.pop();
+                  }
+                },
+                onDelete: (Bill bill) async {
+                  await _viewModel.deleteBill(bill);
 
-                    if (context.mounted) {
-                      context.pop();
-                    }
-                  },
-                );
-          },
-        ),
+                  if (context.mounted) {
+                    context.pop();
+                  }
+                },
+              );
+        },
       ),
     );
   }

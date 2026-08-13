@@ -1,9 +1,12 @@
 import 'package:bills_reminder/data/services/database/bills_service.dart';
 import 'package:bills_reminder/data/services/database/database.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
+import 'package:logging/logging.dart';
 import 'package:sqflite/sqflite.dart' hide Database;
 
 class BillsServiceDatabase implements BillsService {
+  final _log = Logger('BillsServiceDatabase');
+
   @override
   Future<List<Bill>> getBills() async {
     final database = await DatabaseAccessor.instance.database;
@@ -11,6 +14,8 @@ class BillsServiceDatabase implements BillsService {
       'bills',
       orderBy: 'date ASC',
     );
+
+    _log.fine('Loaded ${maps.length} bills');
 
     return List.generate(maps.length, (i) => Bill.fromMap(maps[i]));
   }
@@ -24,6 +29,8 @@ class BillsServiceDatabase implements BillsService {
       whereArgs: [id],
     );
 
+    _log.fine('Loaded bill $id');
+
     return Bill.fromMap(maps.first);
   }
 
@@ -31,11 +38,15 @@ class BillsServiceDatabase implements BillsService {
   Future<int> addBill(Bill bill) async {
     final database = await DatabaseAccessor.instance.database;
 
-    return await database.insert(
+    final id = await database.insert(
       'bills',
       bill.toMap(),
       conflictAlgorithm: ConflictAlgorithm.fail,
     );
+
+    _log.fine('Added bill $id');
+
+    return id;
   }
 
   @override
@@ -49,6 +60,8 @@ class BillsServiceDatabase implements BillsService {
       whereArgs: [bill.id],
       conflictAlgorithm: ConflictAlgorithm.fail,
     );
+
+    _log.fine('Updated bill ${bill.id}');
   }
 
   @override
@@ -56,6 +69,8 @@ class BillsServiceDatabase implements BillsService {
     final database = await DatabaseAccessor.instance.database;
 
     await database.delete('bills');
+
+    _log.fine('Deleted all bills');
   }
 
   @override
@@ -63,5 +78,7 @@ class BillsServiceDatabase implements BillsService {
     final database = await DatabaseAccessor.instance.database;
 
     await database.delete('bills', where: 'id = ?', whereArgs: [bill.id]);
+
+    _log.fine('Deleted bill ${bill.id}');
   }
 }

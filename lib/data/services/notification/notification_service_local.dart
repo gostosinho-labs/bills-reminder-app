@@ -4,11 +4,13 @@ import 'package:bills_reminder/data/services/notification/notification_service.d
 import 'package:bills_reminder/domain/models/bill.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:logging/logging.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationServiceLocal implements NotificationService {
   static final _notification = FlutterLocalNotificationsPlugin();
+  static final _log = Logger('NotificationServiceLocal');
 
   static Future<void> initializeTimezone() async {
     tz.initializeTimeZones();
@@ -89,6 +91,8 @@ class NotificationServiceLocal implements NotificationService {
       notificationDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
+
+    _log.fine('Scheduled notification for bill ${bill.id} at $date');
   }
 
   @override
@@ -121,15 +125,21 @@ class NotificationServiceLocal implements NotificationService {
       '$initialMessage ${bill.value != null ? '(${bill.value})' : ''}',
       notificationDetails,
     );
+
+    _log.fine('Shown notification for bill ${bill.id}');
   }
 
   @override
   Future<void> cancel(Bill bill) async {
     await _notification.cancel(bill.id);
+
+    _log.fine('Cancelled notification for bill ${bill.id}');
   }
 
   @override
   Future<void> cancelAll() async {
     await _notification.cancelAll();
+
+    _log.fine('Cancelled all notifications');
   }
 }

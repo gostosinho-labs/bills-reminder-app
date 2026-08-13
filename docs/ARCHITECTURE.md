@@ -56,15 +56,6 @@ Only once that logic is implemented and tested should the screen
 (`lib/ui/<feature>/<feature>_screen.dart`) be written to consume the view
 model.
 
-### Known deviation
-
-`lib/ui/settings/notifications/notifications_settings_view_model.dart`
-imports concrete data-layer classes directly (`BillsServiceDatabase`,
-`NotificationServiceLocal`, `BackgroundServiceLocal`,
-`PreferenceServiceLocal`) instead of going through a repository. This breaks
-the "only talk to the layer directly below" rule. Treat this as legacy debt,
-not as a pattern to copy — new features should go through a repository.
-
 ## Dependency Injection
 
 The app uses the `provider` package (not Riverpod/get_it). All singletons are
@@ -86,10 +77,9 @@ class — each view model is a plain, independent class.
 
 Each `StatefulWidget` screen instantiates its own view model in `initState()`
 and rebuilds the UI using `ListenableBuilder(listenable: _viewModel, ...)`.
-One screen (`lib/ui/bills/edit/bills_edit_screen.dart`) instead wraps the view
-model in `ChangeNotifierProvider.value` — a mixed pattern; prefer the plain
-`ListenableBuilder` approach used elsewhere for new screens unless there's a
-specific reason to use `ChangeNotifierProvider`.
+There is no exception to this — no screen should wrap its view model in
+`ChangeNotifierProvider` unless there's a specific reason to share it with
+descendant widgets.
 
 Not every view model is a `ChangeNotifier`: `bills_create_view_model.dart` is
 a plain class because bill creation has no loading/error state to observe.
@@ -106,6 +96,7 @@ more) concrete implementation files, named `<name>.dart` /
 | Interface | Implementation | Backing technology |
 |---|---|---|
 | `data/repositories/bills/bills_repository.dart` (`BillsRepository`) | `bills_repository_local.dart` (`BillsRepositoryLocal`) | composes `BillsService` + `NotificationService` |
+| `data/repositories/notifications_settings/notifications_settings_repository.dart` (`NotificationsSettingsRepository`) | `notifications_settings_repository_local.dart` (`NotificationsSettingsRepositoryLocal`) | composes `PreferenceService`; instantiates `BillsServiceDatabase`/`NotificationServiceLocal`/`BackgroundServiceLocal` internally to run isolate work via `compute` |
 | `data/services/database/bills_service.dart` (`BillsService`) | `bills_service_database.dart` (`BillsServiceDatabase`) | sqflite (raw SQL, no ORM/codegen) |
 | `data/services/notification/notification_service.dart` (`NotificationService`) | `notification_service_local.dart` (`NotificationServiceLocal`) | flutter_local_notifications + timezone |
 | `data/services/background/background_service.dart` (`BackgroundService`) | `background_service_local.dart` (`BackgroundServiceLocal`) | workmanager |
@@ -127,7 +118,8 @@ stored as `0`/`1` ints. There is no code generation (no freezed/json_serializabl
 `fromMap`.
 
 Background isolate entrypoints (e.g. the daily reminder task in
-`background_service_local.dart`, marked `@pragma('vm:entry-point')`)
+`background_service_local.dart`, marked `@pragma('vm:entry-point')`, and the
+`compute` calls in `notifications_settings_repository_local.dart`)
 instantiate concrete service classes directly instead of going through
 `Provider`, since a background isolate has no widget tree to read providers
 from.

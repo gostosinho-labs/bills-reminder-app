@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:bills_reminder/data/services/database/bills_service.dart';
 import 'package:bills_reminder/data/services/notification/notification_service.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
+import 'package:logging/logging.dart';
 
 import 'bills_repository.dart';
 
@@ -15,6 +16,7 @@ class BillsRepositoryLocal implements BillsRepository {
 
   final BillsService _billsService;
   final NotificationService _billsNotificationService;
+  final _log = Logger('BillsRepositoryLocal');
 
   @override
   Future<UnmodifiableListView<Bill>> getBills() async {
@@ -35,6 +37,7 @@ class BillsRepositoryLocal implements BillsRepository {
     bill = bill.copyWith(id: id);
 
     if (bill.notification && bill.date.isAfter(DateTime.now())) {
+      _log.fine('Scheduling notification for new bill ${bill.id}');
       await _billsNotificationService.schedule(bill);
     }
   }
@@ -44,8 +47,10 @@ class BillsRepositoryLocal implements BillsRepository {
     await _billsService.updateBill(bill);
 
     if (bill.notification && bill.date.isAfter(DateTime.now())) {
+      _log.fine('Scheduling notification for updated bill ${bill.id}');
       await _billsNotificationService.schedule(bill);
     } else {
+      _log.fine('Cancelling notification for updated bill ${bill.id}');
       await _billsNotificationService.cancel(bill);
     }
   }
@@ -54,11 +59,15 @@ class BillsRepositoryLocal implements BillsRepository {
   Future<void> deleteBills() async {
     await _billsService.deleteBills();
     await _billsNotificationService.cancelAll();
+
+    _log.fine('Deleted all bills and cancelled all notifications');
   }
 
   @override
   Future<void> deleteBill(Bill bill) async {
     await _billsService.deleteBill(bill);
     await _billsNotificationService.cancel(bill);
+
+    _log.fine('Deleted bill ${bill.id} and cancelled its notification');
   }
 }

@@ -190,11 +190,11 @@ not reported back to the settings screen.
 
 - **Create Sample Bills**: A debug-only home-menu action creates 15 pending,
    recurring bills in the current month.
-- **Logging**: Named loggers cover feature view models and background work.
-   Logging is not present in every repository and service operation.
+- **Logging**: Named loggers cover feature view models, repositories, services,
+   and background work.
 - **Debug notification widgets**: `DebugNotifications` and
    `DebugBackgroundWork` can inspect pending notifications and WorkManager
-   state, but no current screen includes these widgets.
+   state.
 
 ## Storage and Privacy
 

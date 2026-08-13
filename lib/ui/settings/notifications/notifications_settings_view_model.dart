@@ -1,18 +1,13 @@
-import 'package:bills_reminder/data/services/background/background_service_local.dart';
-import 'package:bills_reminder/data/services/database/bills_service_database.dart';
-import 'package:bills_reminder/data/services/notification/notification_service_local.dart';
-import 'package:bills_reminder/data/services/preference/preference_bool.dart';
-import 'package:bills_reminder/data/services/preference/preference_service.dart';
-import 'package:bills_reminder/data/services/preference/preference_service_local.dart';
+import 'package:bills_reminder/data/repositories/notifications_settings/notifications_settings_repository.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
 class NotificationsSettingsViewModel extends ChangeNotifier {
-  NotificationsSettingsViewModel({required PreferenceService preferenceService})
-    : _preferenceService = preferenceService;
+  NotificationsSettingsViewModel({
+    required NotificationsSettingsRepository repository,
+  }) : _repository = repository;
 
-  final PreferenceService _preferenceService;
+  final NotificationsSettingsRepository _repository;
   final _log = Logger('NotificationsSettingsViewModel');
 
   bool _isLoading = true;
@@ -35,15 +30,12 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _enableStartupNotification = await _preferenceService.isBool(
-        PreferenceBool.startup,
-      );
-      _enablePerBillNotification = await _preferenceService.isBool(
-        PreferenceBool.perBill,
-      );
-      _enableDailyNotification = await _preferenceService.isBool(
-        PreferenceBool.daily,
-      );
+      _enableStartupNotification = await _repository
+          .isStartupNotificationEnabled();
+      _enablePerBillNotification = await _repository
+          .isPerBillNotificationEnabled();
+      _enableDailyNotification = await _repository
+          .isDailyNotificationEnabled();
 
       _log.fine('Notification settings loaded');
     } catch (e) {
@@ -59,7 +51,7 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
     _log.fine('Setting startup notification to $value');
 
     try {
-      await _preferenceService.setBool(PreferenceBool.startup, value);
+      await _repository.setStartupNotificationEnabled(value);
 
       _enableStartupNotification = value;
       _error = null;
@@ -77,38 +69,11 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
     _log.fine('Setting per bill notification to $value');
 
     try {
-      await _preferenceService.setBool(PreferenceBool.perBill, value);
+      await _repository.setPerBillNotificationEnabled(value);
 
       _enablePerBillNotification = value;
-
-      // Not awaited since the result isn't important.
-      compute((message) async {
-        BackgroundIsolateBinaryMessenger.ensureInitialized(message.token);
-
-        await NotificationServiceLocal.initializeTimezone();
-
-        final service = BillsServiceDatabase();
-        final notification = NotificationServiceLocal();
-        final log = Logger(
-          'NotificationsSettingsViewModel.setPerBillNotification',
-        );
-
-        if (message.enabled) {
-          final now = DateTime.now();
-          final bills = await service.getBills();
-
-          for (final bill in bills) {
-            if (bill.date.isAfter(now)) {
-              log.fine('Scheduling notification for bill: ${bill.name}');
-              await notification.schedule(bill);
-            }
-          }
-        } else {
-          await notification.cancelAll();
-        }
-      }, (enabled: value, token: RootIsolateToken.instance!));
-
       _error = null;
+
       _log.fine('Per bill notification set to $value');
     } catch (e) {
       _error = e;
@@ -122,25 +87,11 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
     _log.fine('Setting daily notification to $value');
 
     try {
-      await _preferenceService.setBool(PreferenceBool.daily, value);
+      await _repository.setDailyNotificationEnabled(value);
 
       _enableDailyNotification = value;
-
-      // Not awaited since the result isn't important.
-      compute((message) async {
-        BackgroundIsolateBinaryMessenger.ensureInitialized(message.token);
-
-        await BackgroundServiceLocal.initialize();
-
-        final preferenceService = PreferenceServiceLocal();
-        final backgroundService = BackgroundServiceLocal(
-          preferenceService: preferenceService,
-        );
-
-        await backgroundService.registerDailyNotification();
-      }, (token: RootIsolateToken.instance!));
-
       _error = null;
+
       _log.fine('Daily notification set to $value');
     } catch (e) {
       _error = e;

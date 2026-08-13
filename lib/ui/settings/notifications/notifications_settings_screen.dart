@@ -17,9 +17,7 @@ class _NotificationsSettingsScreenState
   @override
   void initState() {
     super.initState();
-    _viewModel = NotificationsSettingsViewModel(
-      preferenceService: context.read(),
-    );
+    _viewModel = NotificationsSettingsViewModel(repository: context.read());
 
     Future.microtask(() => _viewModel.loadSettings());
   }

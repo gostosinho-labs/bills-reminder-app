@@ -1,5 +1,7 @@
 import 'package:bills_reminder/data/repositories/bills/bills_repository.dart';
 import 'package:bills_reminder/data/repositories/bills/bills_repository_local.dart';
+import 'package:bills_reminder/data/repositories/notifications_settings/notifications_settings_repository.dart';
+import 'package:bills_reminder/data/repositories/notifications_settings/notifications_settings_repository_local.dart';
 import 'package:bills_reminder/data/services/background/background_service.dart';
 import 'package:bills_reminder/data/services/background/background_service_local.dart';
 import 'package:bills_reminder/data/services/database/bills_service.dart';
@@ -32,6 +34,14 @@ List<SingleChildWidget> localProviders() {
               billsNotificationService: context.read(),
             )
             as BillsRepository;
+      },
+    ),
+    Provider(
+      create: (context) {
+        return NotificationsSettingsRepositoryLocal(
+              preferenceService: context.read(),
+            )
+            as NotificationsSettingsRepository;
       },
     ),
   ];
