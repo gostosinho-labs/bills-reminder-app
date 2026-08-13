@@ -32,6 +32,30 @@ Each production screen must have one corresponding view model. The data layer
 does not need a 1-to-1 match: one repository or service can support multiple
 features.
 
+### Implementation Order
+
+The domain model, data-layer interfaces/implementations, and view-model
+business logic are plain Dart and UI-agnostic — they don't depend on widgets
+and are verified with the plain `test` package (not `flutter_test`), using
+hand-written fakes instead of a real UI. In principle this core logic could
+back a different front end (e.g. a CLI) with no changes, aside from swapping
+the Flutter-plugin-backed concrete services (sqflite, flutter_local_notifications,
+workmanager, shared_preferences) for non-Flutter equivalents.
+
+When building a new feature, implement and unit-test this core logic first,
+in this order, before writing any screen/widget code:
+
+1. Domain model changes, if any (`lib/domain/`).
+2. Data layer: interface, then implementation (`lib/data/repositories/`,
+   `lib/data/services/`), or extend a fake under `lib/testing/fakes/` if the
+   real backend isn't ready yet.
+3. View model business rules and state (loading/error/data), unit-tested
+   against a fake per the [Testing Conventions](#testing-conventions) below.
+
+Only once that logic is implemented and tested should the screen
+(`lib/ui/<feature>/<feature>_screen.dart`) be written to consume the view
+model.
+
 ### Known deviation
 
 `lib/ui/settings/notifications/notifications_settings_view_model.dart`

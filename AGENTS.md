@@ -40,8 +40,8 @@ For current behavior, user workflows, and the project summary, see
 ## Working on This Project
 
 1. Read [ARCHITECTURE.md](docs/ARCHITECTURE.md) before adding or changing code —
-   it describes the mandatory 3-layer structure (UI → Domain/logic → Data)
-   and naming conventions to follow.
+   it describes the mandatory 3-layer structure (UI → Domain/logic → Data),
+   implementation order, and naming conventions to follow.
 2. Read [VERIFICATION.md](docs/VERIFICATION.md) and run the listed checks
    (`flutter analyze`, `flutter test`, build) before considering any task done.
    CI does **not** run analyze/test, so this is the developer's/agent's
