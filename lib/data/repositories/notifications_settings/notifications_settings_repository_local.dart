@@ -21,10 +21,8 @@ import 'notifications_settings_repository.dart';
 /// failures propagate back to the caller instead of being silently dropped.
 class NotificationsSettingsRepositoryLocal
     implements NotificationsSettingsRepository {
-  NotificationsSettingsRepositoryLocal({
-    required PreferenceService preferenceService,
-  }) : _preferenceService = preferenceService,
-       _log = Logger('NotificationsSettingsRepositoryLocal');
+  NotificationsSettingsRepositoryLocal({required this._preferenceService})
+    : _log = Logger('NotificationsSettingsRepositoryLocal');
 
   final PreferenceService _preferenceService;
   final Logger _log;

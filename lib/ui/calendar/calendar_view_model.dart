@@ -6,8 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 class CalendarViewModel extends ChangeNotifier {
-  CalendarViewModel({required BillsRepository repository})
-      : _repository = repository;
+  CalendarViewModel({required this._repository});
 
   final BillsRepository _repository;
   final _log = Logger('CalendarViewModel');
@@ -58,10 +57,10 @@ class CalendarViewModel extends ChangeNotifier {
 
     for (final bill in _bills) {
       // Only consider bills within the selected month.
-      if (bill.date.year == _selectedMonth.year && 
+      if (bill.date.year == _selectedMonth.year &&
           bill.date.month == _selectedMonth.month) {
         final date = DateTime(bill.date.year, bill.date.month, bill.date.day);
-        
+
         if (billsByDate.containsKey(date)) {
           billsByDate[date]!.add(bill);
         } else {

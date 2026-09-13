@@ -16,7 +16,7 @@ class NotificationServiceLocal implements NotificationService {
     tz.initializeTimeZones();
 
     final timezone = await FlutterTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timezone));
+    tz.setLocalLocation(tz.getLocation(timezone.identifier));
   }
 
   static Future<void> initializeNotification() async {
@@ -30,7 +30,10 @@ class NotificationServiceLocal implements NotificationService {
     );
 
     await _notification.initialize(
-      const InitializationSettings(android: androidSettings, iOS: iosSettings),
+      settings: const InitializationSettings(
+        android: androidSettings,
+        iOS: iosSettings,
+      ),
     );
   }
 
@@ -84,11 +87,11 @@ class NotificationServiceLocal implements NotificationService {
     );
 
     await _notification.zonedSchedule(
-      bill.id,
-      bill.name,
-      'Due today ${bill.value != null ? '(${bill.value})' : ''}',
-      date,
-      notificationDetails,
+      id: bill.id,
+      title: bill.name,
+      body: 'Due today ${bill.value != null ? '(${bill.value})' : ''}',
+      scheduledDate: date,
+      notificationDetails: notificationDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
 
@@ -120,10 +123,10 @@ class NotificationServiceLocal implements NotificationService {
         : 'Overdue bill $days $dayWord late';
 
     await _notification.show(
-      bill.id * -1, // Invert to avoid conflicts with scheduled notifications.
-      bill.name,
-      '$initialMessage ${bill.value != null ? '(${bill.value})' : ''}',
-      notificationDetails,
+      id: bill.id * -1, // Invert to avoid scheduled-notification conflicts.
+      title: bill.name,
+      body: '$initialMessage ${bill.value != null ? '(${bill.value})' : ''}',
+      notificationDetails: notificationDetails,
     );
 
     _log.fine('Shown notification for bill ${bill.id}');
@@ -131,7 +134,7 @@ class NotificationServiceLocal implements NotificationService {
 
   @override
   Future<void> cancel(Bill bill) async {
-    await _notification.cancel(bill.id);
+    await _notification.cancel(id: bill.id);
 
     _log.fine('Cancelled notification for bill ${bill.id}');
   }

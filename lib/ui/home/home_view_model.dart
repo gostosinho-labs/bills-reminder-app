@@ -6,8 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  HomeViewModel({required BillsRepository repository})
-    : _repository = repository;
+  HomeViewModel({required this._repository});
 
   final BillsRepository _repository;
   final _log = Logger('HomeViewModel');

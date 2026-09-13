@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
 class BillsEditViewModel extends ChangeNotifier {
-  BillsEditViewModel({required BillsRepository repository})
-    : _repository = repository;
+  BillsEditViewModel({required this._repository});
 
   final BillsRepository _repository;
   final _log = Logger('BillsEditViewModel');

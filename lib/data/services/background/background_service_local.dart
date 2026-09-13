@@ -9,9 +9,8 @@ import 'package:workmanager/workmanager.dart';
 import 'background_service.dart';
 
 class BackgroundServiceLocal implements BackgroundService {
-  BackgroundServiceLocal({required PreferenceService preferenceService})
-    : _preferenceService = preferenceService,
-      _log = Logger('BillsBackgroundServiceLocal');
+  BackgroundServiceLocal({required this._preferenceService})
+    : _log = Logger('BillsBackgroundServiceLocal');
 
   final PreferenceService _preferenceService;
   final Logger _log;

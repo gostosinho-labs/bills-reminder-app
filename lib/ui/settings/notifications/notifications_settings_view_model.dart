@@ -3,9 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 class NotificationsSettingsViewModel extends ChangeNotifier {
-  NotificationsSettingsViewModel({
-    required NotificationsSettingsRepository repository,
-  }) : _repository = repository;
+  NotificationsSettingsViewModel({required this._repository});
 
   final NotificationsSettingsRepository _repository;
   final _log = Logger('NotificationsSettingsViewModel');
@@ -34,8 +32,7 @@ class NotificationsSettingsViewModel extends ChangeNotifier {
           .isStartupNotificationEnabled();
       _enablePerBillNotification = await _repository
           .isPerBillNotificationEnabled();
-      _enableDailyNotification = await _repository
-          .isDailyNotificationEnabled();
+      _enableDailyNotification = await _repository.isDailyNotificationEnabled();
 
       _log.fine('Notification settings loaded');
     } catch (e) {

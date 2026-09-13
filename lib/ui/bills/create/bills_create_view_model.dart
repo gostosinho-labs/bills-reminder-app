@@ -2,8 +2,7 @@ import 'package:bills_reminder/data/repositories/bills/bills_repository.dart';
 import 'package:bills_reminder/domain/models/bill.dart';
 
 class BillsCreateViewModel {
-  BillsCreateViewModel({required BillsRepository repository})
-    : _repository = repository;
+  BillsCreateViewModel({required this._repository});
 
   final BillsRepository _repository;
 

@@ -11,12 +11,10 @@ import 'bills_repository.dart';
 
 class BillsRepositoryLocal implements BillsRepository {
   BillsRepositoryLocal({
-    required BillsService billsService,
-    required NotificationService billsNotificationService,
-    required PreferenceService preferenceService,
-  }) : _billsService = billsService,
-       _billsNotificationService = billsNotificationService,
-       _preferenceService = preferenceService;
+    required this._billsService,
+    required this._billsNotificationService,
+    required this._preferenceService,
+  });
 
   final BillsService _billsService;
   final NotificationService _billsNotificationService;
